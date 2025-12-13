@@ -151,7 +151,7 @@ export default function Result({ onNavigate }: ResultProps) {
 
       <div className="revelations-container">
         {/* ========================================
-            REVELACIÓN 1: VENTANA 72H COM IMAGEM
+            REVELACIÓN 1: VENTANA 72H - MOBILE OPTIMIZADO
             ======================================== */}
         {revelation1 && (
           <div className="revelation fade-in">
@@ -161,33 +161,37 @@ export default function Result({ onNavigate }: ResultProps) {
             </div>
             <p className="revelation-text">{getPersonalizedText()}</p>
 
+            {/* ✅ MOBILE OPTIMIZADO - Padding e espaçamento generosos */}
             <div style={{
               background: 'linear-gradient(135deg, rgba(220, 38, 38, 0.15) 0%, rgba(239, 68, 68, 0.05) 100%)',
               border: '2px solid rgb(239, 68, 68)',
               borderRadius: '16px',
-              padding: '32px 24px',
-              marginTop: '32px',
+              padding: 'clamp(24px, 6vw, 48px) clamp(16px, 5vw, 32px)',
+              marginTop: 'clamp(24px, 6vw, 32px)',
               boxShadow: '0 8px 32px rgba(239, 68, 68, 0.2)'
             }}>
               
-              <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+              <div style={{ textAlign: 'center', marginBottom: 'clamp(24px, 6vw, 40px)' }}>
                 <div style={{
-                  fontSize: '3rem',
-                  marginBottom: '12px'
+                  fontSize: 'clamp(2.5rem, 8vw, 3.5rem)',
+                  marginBottom: 'clamp(12px, 3vw, 16px)'
                 }}>⚡</div>
                 <h2 style={{ 
-                  fontSize: 'clamp(1.75rem, 5vw, 2.5rem)', 
+                  fontSize: 'clamp(1.5rem, 6vw, 2.5rem)', 
                   fontWeight: '900',
                   color: 'white',
-                  marginBottom: '12px',
-                  lineHeight: '1.2'
+                  marginBottom: 'clamp(12px, 3vw, 16px)',
+                  lineHeight: '1.3',
+                  padding: '0 8px'
                 }}>
                   LA VENTANA DE 72 HORAS
                 </h2>
                 <p style={{
                   color: 'rgb(252, 165, 165)',
-                  fontSize: 'clamp(1rem, 3vw, 1.25rem)',
-                  fontWeight: '600'
+                  fontSize: 'clamp(1rem, 4vw, 1.25rem)',
+                  fontWeight: '600',
+                  padding: '0 8px',
+                  lineHeight: '1.4'
                 }}>
                   El secreto que los neurocientíficos descubrieron
                 </p>
@@ -196,14 +200,14 @@ export default function Result({ onNavigate }: ResultProps) {
               <div style={{
                 background: 'rgba(0, 0, 0, 0.4)',
                 borderRadius: '12px',
-                padding: '24px',
-                marginBottom: '28px',
+                padding: 'clamp(20px, 5vw, 28px)',
+                marginBottom: 'clamp(24px, 5vw, 32px)',
                 backdropFilter: 'blur(10px)'
               }}>
                 <p style={{ 
                   color: 'white', 
-                  fontSize: 'clamp(1.125rem, 3.5vw, 1.375rem)', 
-                  lineHeight: '1.6',
+                  fontSize: 'clamp(1rem, 4vw, 1.375rem)', 
+                  lineHeight: '1.7',
                   textAlign: 'center',
                   margin: 0
                 }}>
@@ -217,28 +221,29 @@ export default function Result({ onNavigate }: ResultProps) {
 
               <div style={{
                 display: 'grid',
-                gap: '16px',
-                marginBottom: '28px'
+                gap: 'clamp(16px, 4vw, 20px)',
+                marginBottom: 'clamp(24px, 5vw, 32px)'
               }}>
                 <div style={{
                   background: 'rgba(234, 179, 8, 0.15)',
                   border: '2px solid rgb(234, 179, 8)',
                   borderRadius: '12px',
-                  padding: '20px',
+                  padding: 'clamp(16px, 4vw, 24px)',
                   transition: 'transform 0.2s'
                 }}>
                   <div style={{ 
                     color: 'rgb(250, 204, 21)', 
                     fontWeight: '900',
-                    fontSize: 'clamp(1rem, 3vw, 1.125rem)',
-                    marginBottom: '8px'
+                    fontSize: 'clamp(1rem, 4vw, 1.25rem)',
+                    marginBottom: 'clamp(8px, 2vw, 12px)',
+                    lineHeight: '1.3'
                   }}>
                     FASE 1 (0-24h)
                   </div>
                   <div style={{ 
                     color: 'white',
-                    fontSize: 'clamp(0.9rem, 2.5vw, 1rem)',
-                    lineHeight: '1.5'
+                    fontSize: 'clamp(0.9rem, 3.5vw, 1.125rem)',
+                    lineHeight: '1.6'
                   }}>
                     Dopamina cae 67% → Ella siente "alivio"
                   </div>
@@ -248,21 +253,22 @@ export default function Result({ onNavigate }: ResultProps) {
                   background: 'rgba(234, 179, 8, 0.15)',
                   border: '2px solid rgb(234, 179, 8)',
                   borderRadius: '12px',
-                  padding: '20px',
+                  padding: 'clamp(16px, 4vw, 24px)',
                   transition: 'transform 0.2s'
                 }}>
                   <div style={{ 
                     color: 'rgb(250, 204, 21)', 
                     fontWeight: '900',
-                    fontSize: 'clamp(1rem, 3vw, 1.125rem)',
-                    marginBottom: '8px'
+                    fontSize: 'clamp(1rem, 4vw, 1.25rem)',
+                    marginBottom: 'clamp(8px, 2vw, 12px)',
+                    lineHeight: '1.3'
                   }}>
                     FASE 2 (24-48h)
                   </div>
                   <div style={{ 
                     color: 'white',
-                    fontSize: 'clamp(0.9rem, 2.5vw, 1rem)',
-                    lineHeight: '1.5'
+                    fontSize: 'clamp(0.9rem, 3.5vw, 1.125rem)',
+                    lineHeight: '1.6'
                   }}>
                     Oxitocina se desconecta → Ella "olvida" los buenos momentos
                   </div>
@@ -272,21 +278,22 @@ export default function Result({ onNavigate }: ResultProps) {
                   background: 'rgba(234, 179, 8, 0.15)',
                   border: '2px solid rgb(234, 179, 8)',
                   borderRadius: '12px',
-                  padding: '20px',
+                  padding: 'clamp(16px, 4vw, 24px)',
                   transition: 'transform 0.2s'
                 }}>
                   <div style={{ 
                     color: 'rgb(250, 204, 21)', 
                     fontWeight: '900',
-                    fontSize: 'clamp(1rem, 3vw, 1.125rem)',
-                    marginBottom: '8px'
+                    fontSize: 'clamp(1rem, 4vw, 1.25rem)',
+                    marginBottom: 'clamp(8px, 2vw, 12px)',
+                    lineHeight: '1.3'
                   }}>
                     FASE 3 (48-72h)
                   </div>
                   <div style={{ 
                     color: 'white',
-                    fontSize: 'clamp(0.9rem, 2.5vw, 1rem)',
-                    lineHeight: '1.5'
+                    fontSize: 'clamp(0.9rem, 3.5vw, 1.125rem)',
+                    lineHeight: '1.6'
                   }}>
                     Córtex prefrontal reescribe memorias → Ella te ve diferente
                   </div>
@@ -294,8 +301,8 @@ export default function Result({ onNavigate }: ResultProps) {
               </div>
 
               <div style={{
-                marginTop: '32px',
-                marginBottom: '32px',
+                marginTop: 'clamp(28px, 6vw, 40px)',
+                marginBottom: 'clamp(28px, 6vw, 40px)',
                 textAlign: 'center'
               }}>
                 <img 
@@ -323,23 +330,24 @@ export default function Result({ onNavigate }: ResultProps) {
                 background: 'rgba(239, 68, 68, 0.2)',
                 border: '2px solid rgb(248, 113, 113)',
                 borderRadius: '12px',
-                padding: '24px',
+                padding: 'clamp(20px, 5vw, 28px)',
                 textAlign: 'center'
               }}>
                 <p style={{ 
                   color: 'white', 
-                  fontSize: 'clamp(1.125rem, 3.5vw, 1.5rem)', 
+                  fontSize: 'clamp(1.125rem, 4.5vw, 1.5rem)', 
                   fontWeight: '900',
                   margin: 0,
-                  lineHeight: '1.4'
+                  lineHeight: '1.5',
+                  marginBottom: 'clamp(12px, 3vw, 16px)'
                 }}>
                   ¿Sabes qué hacer en cada fase?
                 </p>
                 <p style={{
                   color: 'rgb(252, 165, 165)',
-                  fontSize: 'clamp(0.9rem, 2.5vw, 1rem)',
-                  marginTop: '12px',
-                  marginBottom: 0
+                  fontSize: 'clamp(0.9rem, 3.5vw, 1.125rem)',
+                  margin: 0,
+                  lineHeight: '1.5'
                 }}>
                   El video abajo revela todo el protocolo paso a paso
                 </p>
@@ -375,84 +383,279 @@ export default function Result({ onNavigate }: ResultProps) {
         )}
 
         {/* ========================================
-            REVELACIÓN 3: OFERTA COM MÓDULOS DETALHADOS
+            REVELACIÓN 3: OFERTA - MOBILE OPTIMIZADO
             ======================================== */}
         {revelation3 && (
-          <div className="revelation fade-in offer-revelation">
-            <div className="offer-badge">OFERTA EXCLUSIVA</div>
+          <div className="revelation fade-in offer-revelation" style={{
+            position: 'relative',
+            padding: 'clamp(20px, 5vw, 32px)'
+          }}>
+            
+            {/* ✅ Badge reposicionado - não sobrepõe mais */}
+            <div style={{
+              background: 'rgb(234, 179, 8)',
+              color: 'black',
+              fontWeight: 'bold',
+              fontSize: 'clamp(0.75rem, 3vw, 0.875rem)',
+              padding: 'clamp(6px, 2vw, 8px) clamp(12px, 3vw, 16px)',
+              borderRadius: '9999px',
+              display: 'inline-block',
+              marginBottom: 'clamp(16px, 4vw, 20px)',
+              textAlign: 'center',
+              width: 'auto',
+              maxWidth: '100%'
+            }}>
+              OFERTA EXCLUSIVA
+            </div>
 
-            <div className="revelation-header">
+            <div className="revelation-header" style={{ marginTop: 0 }}>
               <div className="revelation-icon">🎯</div>
-              <h2>Plan de Reconquista Personalizado</h2>
+              <h2 style={{ 
+                fontSize: 'clamp(1.5rem, 6vw, 2rem)',
+                lineHeight: '1.3',
+                marginBottom: 'clamp(20px, 5vw, 24px)',
+                padding: '0 8px'
+              }}>
+                Plan de Reconquista Personalizado
+              </h2>
             </div>
 
-            {/* ✅ MÓDULOS DETALHADOS (4 módulos + guia + bônus + garantia) */}
-            <div className="offer-features">
-              <div className="feature">
-                <svg className="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+            {/* ✅ Features com espaçamento otimizado */}
+            <div className="offer-features" style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 'clamp(12px, 3vw, 16px)',
+              marginBottom: 'clamp(24px, 5vw, 32px)'
+            }}>
+              <div className="feature" style={{
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: 'clamp(10px, 3vw, 12px)',
+                padding: 'clamp(8px, 2vw, 12px) 0'
+              }}>
+                <svg className="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" style={{
+                  minWidth: 'clamp(20px, 5vw, 24px)',
+                  width: 'clamp(20px, 5vw, 24px)',
+                  height: 'clamp(20px, 5vw, 24px)',
+                  marginTop: '2px'
+                }}>
                   <polyline points="20 6 9 17 4 12"></polyline>
                 </svg>
-                <span>📱 MÓDULO 1: Conversaciones (Días 1-7)</span>
+                <span style={{
+                  fontSize: 'clamp(0.9rem, 3.5vw, 1.125rem)',
+                  lineHeight: '1.5',
+                  flex: 1
+                }}>📱 MÓDULO 1: Conversaciones (Días 1-7)</span>
               </div>
-              <div className="feature">
-                <svg className="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+              <div className="feature" style={{
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: 'clamp(10px, 3vw, 12px)',
+                padding: 'clamp(8px, 2vw, 12px) 0'
+              }}>
+                <svg className="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" style={{
+                  minWidth: 'clamp(20px, 5vw, 24px)',
+                  width: 'clamp(20px, 5vw, 24px)',
+                  height: 'clamp(20px, 5vw, 24px)',
+                  marginTop: '2px'
+                }}>
                   <polyline points="20 6 9 17 4 12"></polyline>
                 </svg>
-                <span>👥 MÓDULO 2: Encuentros (Días 8-14)</span>
+                <span style={{
+                  fontSize: 'clamp(0.9rem, 3.5vw, 1.125rem)',
+                  lineHeight: '1.5',
+                  flex: 1
+                }}>👥 MÓDULO 2: Encuentros (Días 8-14)</span>
               </div>
-              <div className="feature">
-                <svg className="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+              <div className="feature" style={{
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: 'clamp(10px, 3vw, 12px)',
+                padding: 'clamp(8px, 2vw, 12px) 0'
+              }}>
+                <svg className="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" style={{
+                  minWidth: 'clamp(20px, 5vw, 24px)',
+                  width: 'clamp(20px, 5vw, 24px)',
+                  height: 'clamp(20px, 5vw, 24px)',
+                  marginTop: '2px'
+                }}>
                   <polyline points="20 6 9 17 4 12"></polyline>
                 </svg>
-                <span>❤️ MÓDULO 3: Reconquista (Días 15-21)</span>
+                <span style={{
+                  fontSize: 'clamp(0.9rem, 3.5vw, 1.125rem)',
+                  lineHeight: '1.5',
+                  flex: 1
+                }}>❤️ MÓDULO 3: Reconquista (Días 15-21)</span>
               </div>
-              <div className="feature">
-                <svg className="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+              <div className="feature" style={{
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: 'clamp(10px, 3vw, 12px)',
+                padding: 'clamp(8px, 2vw, 12px) 0'
+              }}>
+                <svg className="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" style={{
+                  minWidth: 'clamp(20px, 5vw, 24px)',
+                  width: 'clamp(20px, 5vw, 24px)',
+                  height: 'clamp(20px, 5vw, 24px)',
+                  marginTop: '2px'
+                }}>
                   <polyline points="20 6 9 17 4 12"></polyline>
                 </svg>
-                <span>🚨 MÓDULO 4: Protocolo de Emergencia</span>
+                <span style={{
+                  fontSize: 'clamp(0.9rem, 3.5vw, 1.125rem)',
+                  lineHeight: '1.5',
+                  flex: 1
+                }}>🚨 MÓDULO 4: Protocolo de Emergencia</span>
               </div>
-              <div className="feature">
-                <svg className="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+              <div className="feature" style={{
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: 'clamp(10px, 3vw, 12px)',
+                padding: 'clamp(8px, 2vw, 12px) 0'
+              }}>
+                <svg className="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" style={{
+                  minWidth: 'clamp(20px, 5vw, 24px)',
+                  width: 'clamp(20px, 5vw, 24px)',
+                  height: 'clamp(20px, 5vw, 24px)',
+                  marginTop: '2px'
+                }}>
                   <polyline points="20 6 9 17 4 12"></polyline>
                 </svg>
-                <span>Guía especial: Ventana de 72 Horas</span>
+                <span style={{
+                  fontSize: 'clamp(0.9rem, 3.5vw, 1.125rem)',
+                  lineHeight: '1.5',
+                  flex: 1
+                }}>Guía especial: Ventana de 72 Horas</span>
               </div>
-              <div className="feature">
-                <svg className="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+              <div className="feature" style={{
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: 'clamp(10px, 3vw, 12px)',
+                padding: 'clamp(8px, 2vw, 12px) 0'
+              }}>
+                <svg className="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" style={{
+                  minWidth: 'clamp(20px, 5vw, 24px)',
+                  width: 'clamp(20px, 5vw, 24px)',
+                  height: 'clamp(20px, 5vw, 24px)',
+                  marginTop: '2px'
+                }}>
                   <polyline points="20 6 9 17 4 12"></polyline>
                 </svg>
-                <span>Bonos de acción inmediata</span>
+                <span style={{
+                  fontSize: 'clamp(0.9rem, 3.5vw, 1.125rem)',
+                  lineHeight: '1.5',
+                  flex: 1
+                }}>Bonos de acción inmediata</span>
               </div>
-              <div className="feature">
-                <svg className="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+              <div className="feature" style={{
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: 'clamp(10px, 3vw, 12px)',
+                padding: 'clamp(8px, 2vw, 12px) 0'
+              }}>
+                <svg className="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" style={{
+                  minWidth: 'clamp(20px, 5vw, 24px)',
+                  width: 'clamp(20px, 5vw, 24px)',
+                  height: 'clamp(20px, 5vw, 24px)',
+                  marginTop: '2px'
+                }}>
                   <polyline points="20 6 9 17 4 12"></polyline>
                 </svg>
-                <span>Garantía de 30 días</span>
+                <span style={{
+                  fontSize: 'clamp(0.9rem, 3.5vw, 1.125rem)',
+                  lineHeight: '1.5',
+                  flex: 1
+                }}>Garantía de 30 días</span>
               </div>
             </div>
 
-            <div className="urgency-indicators">
-              <div className="indicator">
-                <span className="indicator-label">Tiempo restante:</span>
-                <span className="indicator-value countdown">{formatTime(timeLeft)}</span>
+            <div className="urgency-indicators" style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr',
+              gap: 'clamp(12px, 3vw, 16px)',
+              marginBottom: 'clamp(24px, 5vw, 32px)'
+            }}>
+              <div className="indicator" style={{
+                textAlign: 'center',
+                padding: 'clamp(12px, 3vw, 16px)',
+                background: 'rgba(0, 0, 0, 0.3)',
+                borderRadius: '8px'
+              }}>
+                <span className="indicator-label" style={{
+                  display: 'block',
+                  fontSize: 'clamp(0.875rem, 3vw, 1rem)',
+                  marginBottom: '8px'
+                }}>Tiempo restante:</span>
+                <span className="indicator-value countdown" style={{
+                  fontSize: 'clamp(1.5rem, 6vw, 2rem)',
+                  fontWeight: 'bold'
+                }}>{formatTime(timeLeft)}</span>
               </div>
-              <div className="indicator">
-                <span className="indicator-label">Spots disponibles hoy:</span>
-                <span className="indicator-value spots">{spotsLeft}</span>
+              <div className="indicator" style={{
+                textAlign: 'center',
+                padding: 'clamp(12px, 3vw, 16px)',
+                background: 'rgba(0, 0, 0, 0.3)',
+                borderRadius: '8px'
+              }}>
+                <span className="indicator-label" style={{
+                  display: 'block',
+                  fontSize: 'clamp(0.875rem, 3vw, 1rem)',
+                  marginBottom: '8px'
+                }}>Spots disponibles hoy:</span>
+                <span className="indicator-value spots" style={{
+                  fontSize: 'clamp(1.5rem, 6vw, 2rem)',
+                  fontWeight: 'bold'
+                }}>{spotsLeft}</span>
               </div>
             </div>
 
-            <button className="cta-buy" onClick={handleCTAClick}>
+            {/* ✅ Botão otimizado para mobile */}
+            <button 
+              className="cta-buy" 
+              onClick={handleCTAClick}
+              style={{
+                width: '100%',
+                background: 'rgb(234, 179, 8)',
+                color: 'black',
+                fontWeight: '900',
+                padding: 'clamp(16px, 4vw, 20px)',
+                borderRadius: '12px',
+                fontSize: 'clamp(1.125rem, 4.5vw, 1.5rem)',
+                border: '3px solid white',
+                cursor: 'pointer',
+                position: 'relative',
+                overflow: 'hidden',
+                marginBottom: 'clamp(16px, 4vw, 20px)',
+                minHeight: 'clamp(56px, 14vw, 64px)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                lineHeight: '1.3'
+              }}
+            >
               <span className="cta-glow"></span>
               COMPRAR AHORA
             </button>
 
-            <p className="social-proof-count">
+            {/* ✅ Texto abaixo do botão - legível */}
+            <p className="social-proof-count" style={{
+              textAlign: 'center',
+              color: 'rgb(74, 222, 128)',
+              fontSize: 'clamp(0.875rem, 3.5vw, 1.125rem)',
+              marginBottom: 'clamp(12px, 3vw, 16px)',
+              lineHeight: '1.5',
+              fontWeight: '600'
+            }}>
               ✓ +12.847 reconquistas exitosas
             </p>
 
-            <p className="guarantee-text">
+            <p className="guarantee-text" style={{
+              textAlign: 'center',
+              fontSize: 'clamp(0.875rem, 3.5vw, 1rem)',
+              lineHeight: '1.6',
+              color: 'rgba(255, 255, 255, 0.9)',
+              padding: '0 8px'
+            }}>
               Exclusivo para quien completó el análisis personalizado
             </p>
           </div>
@@ -460,11 +663,46 @@ export default function Result({ onNavigate }: ResultProps) {
       </div>
 
       {revelation4 && (
-        <div className="sticky-cta">
-          <div className="sticky-urgency">
+        <div className="sticky-cta" style={{
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          background: 'rgba(0, 0, 0, 0.95)',
+          padding: 'clamp(12px, 3vw, 16px)',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 'clamp(8px, 2vw, 12px)',
+          zIndex: 1000,
+          borderTop: '2px solid rgb(234, 179, 8)'
+        }}>
+          <div className="sticky-urgency" style={{
+            textAlign: 'center',
+            fontSize: 'clamp(0.75rem, 3vw, 0.875rem)',
+            color: 'rgb(253, 224, 71)',
+            fontWeight: 'bold'
+          }}>
             ⏰ {formatTime(timeLeft)} • {spotsLeft} spots restantes
           </div>
-          <button className="cta-buy-sticky" onClick={handleCTAClick}>
+          <button 
+            className="cta-buy-sticky" 
+            onClick={handleCTAClick}
+            style={{
+              width: '100%',
+              background: 'rgb(234, 179, 8)',
+              color: 'black',
+              fontWeight: '900',
+              padding: 'clamp(12px, 3vw, 16px)',
+              borderRadius: '8px',
+              fontSize: 'clamp(1rem, 4vw, 1.25rem)',
+              border: '2px solid white',
+              cursor: 'pointer',
+              minHeight: 'clamp(48px, 12vw, 56px)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
             COMPRAR AHORA
           </button>
         </div>
