@@ -855,4 +855,4 @@ export default function Result({ onNavigate }: ResultProps) {
       `}</style>
     </div>
   );
-}
+} 
