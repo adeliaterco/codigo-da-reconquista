@@ -151,7 +151,7 @@ export default function Result({ onNavigate }: ResultProps) {
 
       <div className="revelations-container">
         {/* ========================================
-            REVELACIÓN 1: VERSÃO MINIMALISTA
+            REVELACIÓN 1: VERSÃO MINIMALISTA COM IMAGEM
             ======================================== */}
         {revelation1 && (
           <div className="revelation fade-in">
@@ -298,6 +298,33 @@ export default function Result({ onNavigate }: ResultProps) {
                     Córtex prefrontal reescribe memorias → Ella te ve diferente
                   </div>
                 </div>
+              </div>
+
+              {/* ✅ IMAGEM ADICIONADA AQUI */}
+              <div style={{
+                marginTop: '32px',
+                marginBottom: '32px',
+                textAlign: 'center'
+              }}>
+                <img 
+                  src="https://comprarplanseguro.shop/wp-content/uploads/2025/10/imagem3-nova.webp"
+                  alt="Ventana de 72 Horas - Proceso Cerebral"
+                  loading="lazy"
+                  style={{
+                    width: '100%',
+                    maxWidth: '600px',
+                    height: 'auto',
+                    borderRadius: '12px',
+                    boxShadow: '0 8px 24px rgba(0, 0, 0, 0.3)',
+                    border: '2px solid rgba(234, 179, 8, 0.3)',
+                    display: 'block',
+                    margin: '0 auto'
+                  }}
+                  onError={(e) => {
+                    console.error('❌ Erro ao carregar imagem');
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
               </div>
 
               {/* CTA da Seção */}
