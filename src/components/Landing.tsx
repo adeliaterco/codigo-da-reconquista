@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { tracking } from '../utils/tracking';
 import { storage } from '../utils/storage';
+import { ga4Tracking } from '../utils/ga4Tracking'; // ✅ NOVO IMPORT
 
 interface LandingProps {
   onNavigate: (page: string) => void;
@@ -11,6 +12,7 @@ export default function Landing({ onNavigate }: LandingProps) {
 
   useEffect(() => {
     tracking.pageView('landing');
+    ga4Tracking.landingPageView(); // ✅ NOVO: GA4 page view
 
     const interval = setInterval(() => {
       setUserCount(prev => {
@@ -25,6 +27,7 @@ export default function Landing({ onNavigate }: LandingProps) {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
             tracking.scrollDepth(50);
+            ga4Tracking.landingScrollDepth(50); // ✅ NOVO: GA4 scroll depth
           }
         });
       },
@@ -42,6 +45,7 @@ export default function Landing({ onNavigate }: LandingProps) {
 
   const handleCTAClick = () => {
     tracking.ctaClicked('landing_primary');
+    ga4Tracking.landingCTAClick(); // ✅ NOVO: GA4 CTA click
     onNavigate('chat');
   };
 

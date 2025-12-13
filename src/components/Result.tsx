@@ -3,6 +3,7 @@ import { tracking } from '../utils/tracking';
 import { storage } from '../utils/storage';
 import { playKeySound, getHotmartUrl } from '../utils/animations';
 import { QuizAnswer } from '../types/quiz';
+import { ga4Tracking } from '../utils/ga4Tracking'; // ✅ IMPORT GA4
 
 // ✅ NOVOS IMPORTS
 import { 
@@ -49,6 +50,7 @@ export default function Result({ onNavigate }: ResultProps) {
 
   useEffect(() => {
     tracking.pageView('resultado');
+    ga4Tracking.resultPageView(); // ✅ GA4 TRACKING
 
     const progressInterval = setInterval(() => {
       setLoadingProgress(prev => {
@@ -69,23 +71,27 @@ export default function Result({ onNavigate }: ResultProps) {
     const timer1 = setTimeout(() => {
       setRevelation1(true);
       tracking.revelationViewed('why_left');
+      ga4Tracking.revelationViewed('Por qué te dejó', 1); // ✅ GA4 TRACKING
     }, 6500);
 
     const timer2 = setTimeout(() => {
       setRevelation2(true);
       tracking.revelationViewed('72h_window');
+      ga4Tracking.revelationViewed('Ventana 72 Horas', 2); // ✅ GA4 TRACKING
     }, 12500);
 
     const timer3 = setTimeout(() => {
       setShowOfferButton(true);
       tracking.revelationViewed('vsl');
       tracking.vslEvent('started');
+      ga4Tracking.videoStarted(); // ✅ GA4 TRACKING
     }, 15500);
 
     const countdownInterval = setInterval(() => {
       setTimeLeft(prev => {
         if (prev <= 1) {
           tracking.countdownExpired();
+          ga4Tracking.countdownExpired(); // ✅ GA4 TRACKING
           return 0;
         }
         return prev - 1;
@@ -97,6 +103,7 @@ export default function Result({ onNavigate }: ResultProps) {
         if (prev > 15) {
           const newSpots = prev - 1;
           storage.setSpotsLeft(newSpots);
+          ga4Tracking.spotsUpdated(newSpots); // ✅ GA4 TRACKING
           return newSpots;
         }
         return prev;
@@ -168,6 +175,7 @@ export default function Result({ onNavigate }: ResultProps) {
 
   const handleCTAClick = () => {
     tracking.ctaClicked('result_buy');
+    ga4Tracking.ctaBuyClicked('result_buy_main'); // ✅ GA4 TRACKING
     window.open(getHotmartUrl(), '_blank');
   };
 
@@ -176,6 +184,8 @@ export default function Result({ onNavigate }: ResultProps) {
     setRevelation3(true);
     tracking.revelationViewed('offer');
     tracking.ctaClicked('reveal_offer_button');
+    ga4Tracking.revelationViewed('Oferta Revelada', 3); // ✅ GA4 TRACKING
+    ga4Tracking.offerRevealed(); // ✅ GA4 TRACKING
     
     setTimeout(() => {
       if (offerSectionRef.current) {
@@ -188,6 +198,7 @@ export default function Result({ onNavigate }: ResultProps) {
 
     setTimeout(() => {
       setRevelation4(true);
+      ga4Tracking.offerViewed(); // ✅ GA4 TRACKING
     }, 3000);
   };
 
@@ -868,7 +879,10 @@ export default function Result({ onNavigate }: ResultProps) {
           {/* ✅ CTA STICKY PERSONALIZADO */}
           <button 
             className="cta-buy-sticky" 
-            onClick={handleCTAClick}
+            onClick={() => {
+              ga4Tracking.ctaBuyClicked('result_buy_sticky'); // ✅ GA4 TRACKING
+              handleCTAClick();
+            }}
             style={{
               width: '100%',
               background: 'rgb(234, 179, 8)',

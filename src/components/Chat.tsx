@@ -3,7 +3,8 @@ import { tracking } from '../utils/tracking';
 import { storage } from '../utils/storage';
 import { playKeySound } from '../utils/animations';
 import { QuizAnswer } from '../types/quiz';
-import { getCompletionBadge } from '../utils/contentByGender'; // ✅ NOVO IMPORT
+import { getCompletionBadge } from '../utils/contentByGender';
+import { ga4Tracking } from '../utils/ga4Tracking'; // ✅ NOVO IMPORT
 
 interface ChatProps {
   onNavigate: (page: string) => void;
@@ -119,6 +120,10 @@ export default function Chat({ onNavigate }: ChatProps) {
   useEffect(() => {
     tracking.pageView('chat');
     tracking.chatStarted();
+    
+    // ✅ GA4 TRACKING
+    ga4Tracking.chatPageView();
+    ga4Tracking.chatStarted();
 
     const initialMessage: Message = {
       type: 'bot',
@@ -185,6 +190,9 @@ export default function Chat({ onNavigate }: ChatProps) {
     storage.saveQuizData(quizData);
 
     tracking.questionAnswered(question.id, option);
+    
+    // ✅ GA4 TRACKING - Rastreia cada resposta
+    ga4Tracking.questionAnswered(question.id, question.text, option);
 
     const newProgress = ((currentQuestion + 1) / QUESTIONS.length) * 100;
     setProgress(newProgress);
@@ -217,6 +225,10 @@ export default function Chat({ onNavigate }: ChatProps) {
           }, 800);
         } else {
           tracking.chatCompleted();
+          
+          // ✅ GA4 TRACKING - Chat completo
+          ga4Tracking.chatCompleted();
+          
           setTimeout(() => {
             const finalMessage: Message = {
               type: 'bot',
@@ -237,12 +249,14 @@ export default function Chat({ onNavigate }: ChatProps) {
 
   const handleViewPlan = () => {
     tracking.ctaClicked('chat_complete');
+    
+    // ✅ GA4 TRACKING - CTA final do chat
+    ga4Tracking.chatCTAClick();
+    
     onNavigate('resultado');
   };
 
   const isComplete = progress === 100;
-  
-  // ✅ PEGAR O quizData PARA USAR NO COMPLETION BADGE
   const quizData = storage.getQuizData();
 
   return (
@@ -295,7 +309,6 @@ export default function Chat({ onNavigate }: ChatProps) {
           </div>
         )}
 
-        {/* ✅ COMPLETION BADGE PERSONALIZADO */}
         {showOptions && isComplete && (
           <div className="options-container">
             <div 
