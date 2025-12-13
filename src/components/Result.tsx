@@ -73,7 +73,7 @@ export default function Result({ onNavigate }: ResultProps) {
     };
   }, []);
 
-  // ✅ NOVO: Integração do vídeo VTurb
+  // ✅ Integração do vídeo VTurb
   useEffect(() => {
     if (!revelation2 || !videoContainerRef.current) return;
 
@@ -151,7 +151,7 @@ export default function Result({ onNavigate }: ResultProps) {
 
       <div className="revelations-container">
         {/* ========================================
-            REVELACIÓN 1: POR QUÉ TE DEJÓ + VENTANA 72H (MELHORADA)
+            REVELACIÓN 1: VERSÃO MINIMALISTA
             ======================================== */}
         {revelation1 && (
           <div className="revelation fade-in">
@@ -161,145 +161,178 @@ export default function Result({ onNavigate }: ResultProps) {
             </div>
             <p className="revelation-text">{getPersonalizedText()}</p>
 
-            {/* ✅ NOVA SEÇÃO: VENTANA DE 72 HORAS COM COPY CIENTÍFICA */}
+            {/* ✅ VERSÃO MINIMALISTA - LIMPA E DIRETA */}
             <div style={{
-              background: 'rgba(220, 38, 38, 0.2)',
+              background: 'linear-gradient(135deg, rgba(220, 38, 38, 0.15) 0%, rgba(239, 68, 68, 0.05) 100%)',
               border: '2px solid rgb(239, 68, 68)',
-              borderRadius: '12px',
-              padding: '24px',
-              marginTop: '24px'
+              borderRadius: '16px',
+              padding: '32px 24px',
+              marginTop: '32px',
+              boxShadow: '0 8px 32px rgba(239, 68, 68, 0.2)'
             }}>
-              <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+              
+              {/* Título Principal */}
+              <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+                <div style={{
+                  fontSize: '3rem',
+                  marginBottom: '12px'
+                }}>⚡</div>
                 <h2 style={{ 
-                  fontSize: 'clamp(1.5rem, 4vw, 2rem)', 
+                  fontSize: 'clamp(1.75rem, 5vw, 2.5rem)', 
                   fontWeight: '900',
                   color: 'white',
-                  marginBottom: '16px'
+                  marginBottom: '12px',
+                  lineHeight: '1.2'
                 }}>
-                  POR QUÉ TE DEJÓ
-                  <br />
-                  <span style={{ color: 'rgb(248, 113, 113)' }}>(Y no es lo que piensas)</span>
+                  LA VENTANA DE 72 HORAS
                 </h2>
-              </div>
-
-              <div style={{
-                background: 'rgba(0, 0, 0, 0.6)',
-                borderRadius: '8px',
-                padding: '20px',
-                marginBottom: '20px',
-                border: '1px solid rgba(239, 68, 68, 0.3)'
-              }}>
-                <p style={{ color: 'white', fontSize: '1.125rem', lineHeight: '1.75' }}>
-                  Ella no te dejó porque dejaste de amarla.
-                  <br /><br />
-                  Te dejó porque <strong style={{ color: 'rgb(252, 165, 165)' }}>dejaste de ser el hombre que la conquistó</strong>.
-                  <br /><br />
-                  Y aquí está el problema:
-                  <br /><br />
-                  El 97% de los hombres hacen lo mismo después de la ruptura:
-                </p>
-              </div>
-
-              <div style={{ marginBottom: '24px' }}>
-                <div style={{
-                  background: 'rgba(127, 29, 29, 0.3)',
-                  borderRadius: '8px',
-                  padding: '16px',
-                  borderLeft: '4px solid rgb(239, 68, 68)',
-                  marginBottom: '16px'
-                }}>
-                  <p style={{ color: 'white', fontWeight: 'bold', marginBottom: '4px' }}>
-                    ❌ Mandan mensajes rogando
-                  </p>
-                  <p style={{ color: 'rgb(209, 213, 219)', fontSize: '0.875rem' }}>
-                    Resultado: Ella te ve como débil y desesperado
-                  </p>
-                </div>
-                
-                <div style={{
-                  background: 'rgba(127, 29, 29, 0.3)',
-                  borderRadius: '8px',
-                  padding: '16px',
-                  borderLeft: '4px solid rgb(239, 68, 68)',
-                  marginBottom: '16px'
-                }}>
-                  <p style={{ color: 'white', fontWeight: 'bold', marginBottom: '4px' }}>
-                    ❌ Intentan "ser amigos"
-                  </p>
-                  <p style={{ color: 'rgb(209, 213, 219)', fontSize: '0.875rem' }}>
-                    Resultado: Friendzone permanente
-                  </p>
-                </div>
-                
-                <div style={{
-                  background: 'rgba(127, 29, 29, 0.3)',
-                  borderRadius: '8px',
-                  padding: '16px',
-                  borderLeft: '4px solid rgb(239, 68, 68)'
-                }}>
-                  <p style={{ color: 'white', fontWeight: 'bold', marginBottom: '4px' }}>
-                    ❌ Desaparecen completamente (contacto cero mal hecho)
-                  </p>
-                  <p style={{ color: 'rgb(209, 213, 219)', fontSize: '0.875rem' }}>
-                    Resultado: Ella sigue adelante y conoce a otro
-                  </p>
-                </div>
-              </div>
-
-              <div style={{
-                background: 'rgba(133, 77, 14, 0.3)',
-                borderRadius: '8px',
-                padding: '24px',
-                border: '2px solid rgb(234, 179, 8)'
-              }}>
                 <p style={{
-                  color: 'rgb(253, 224, 71)',
-                  fontWeight: 'bold',
-                  fontSize: '1.25rem',
-                  marginBottom: '16px',
-                  textAlign: 'center'
+                  color: 'rgb(252, 165, 165)',
+                  fontSize: 'clamp(1rem, 3vw, 1.25rem)',
+                  fontWeight: '600'
                 }}>
-                  ⚡ LA VENTANA DE 72 HORAS
-                </p>
-                <p style={{ color: 'white', fontSize: '1.125rem', lineHeight: '1.75' }}>
-                  Neurocientíficos de la Universidad de Stanford descubrieron algo:
-                  <br /><br />
-                  Después de una ruptura, el cerebro de tu ex pasa por 3 fases químicas en las primeras 72 horas:
-                  <br /><br />
-                  <strong style={{ color: 'rgb(250, 204, 21)' }}>FASE 1 (0-24h):</strong> Dopamina cae 67% → Ella siente "alivio"
-                  <br />
-                  <strong style={{ color: 'rgb(250, 204, 21)' }}>FASE 2 (24-48h):</strong> Oxitocina se desconecta → Ella "olvida" los buenos momentos
-                  <br />
-                  <strong style={{ color: 'rgb(250, 204, 21)' }}>FASE 3 (48-72h):</strong> Córtex prefrontal reescribe las memorias → Ella te ve diferente
-                  <br /><br />
-                  Si haces lo CORRECTO en cada fase...
-                  <br />
-                  <strong style={{ color: 'rgb(74, 222, 128)' }}>Puedes revertir el proceso y hacer que ella TE BUSQUE.</strong>
-                  <br /><br />
-                  Si haces lo INCORRECTO...
-                  <br />
-                  <strong style={{ color: 'rgb(248, 113, 113)' }}>Su cerebro literalmente "borra" la atracción por ti.</strong>
+                  El secreto que los neurocientíficos descubrieron
                 </p>
               </div>
 
-              <div style={{ marginTop: '32px', textAlign: 'center' }}>
-                <p style={{ color: 'white', fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '16px' }}>
-                  La pregunta es:
-                </p>
+              {/* Texto Principal Enxuto */}
+              <div style={{
+                background: 'rgba(0, 0, 0, 0.4)',
+                borderRadius: '12px',
+                padding: '24px',
+                marginBottom: '28px',
+                backdropFilter: 'blur(10px)'
+              }}>
                 <p style={{ 
-                  color: 'rgb(252, 165, 165)', 
-                  fontSize: 'clamp(1.5rem, 4vw, 2rem)', 
-                  fontWeight: '900' 
+                  color: 'white', 
+                  fontSize: 'clamp(1.125rem, 3.5vw, 1.375rem)', 
+                  lineHeight: '1.6',
+                  textAlign: 'center',
+                  margin: 0
                 }}>
-                  ¿Sabes qué hacer en cada una de esas fases?
+                  Después de una ruptura, el cerebro de tu ex pasa por <strong style={{ color: 'rgb(250, 204, 21)' }}>3 fases químicas</strong> en 72 horas.
+                  <br /><br />
+                  Si actúas <strong style={{ color: 'rgb(74, 222, 128)' }}>CORRECTO</strong>, ella te busca.
+                  <br />
+                  Si actúas <strong style={{ color: 'rgb(248, 113, 113)' }}>INCORRECTO</strong>, su cerebro borra la atracción.
                 </p>
               </div>
+
+              {/* 3 Fases - Cards Minimalistas */}
+              <div style={{
+                display: 'grid',
+                gap: '16px',
+                marginBottom: '28px'
+              }}>
+                {/* Fase 1 */}
+                <div style={{
+                  background: 'rgba(234, 179, 8, 0.15)',
+                  border: '2px solid rgb(234, 179, 8)',
+                  borderRadius: '12px',
+                  padding: '20px',
+                  transition: 'transform 0.2s'
+                }}>
+                  <div style={{ 
+                    color: 'rgb(250, 204, 21)', 
+                    fontWeight: '900',
+                    fontSize: 'clamp(1rem, 3vw, 1.125rem)',
+                    marginBottom: '8px'
+                  }}>
+                    FASE 1 (0-24h)
+                  </div>
+                  <div style={{ 
+                    color: 'white',
+                    fontSize: 'clamp(0.9rem, 2.5vw, 1rem)',
+                    lineHeight: '1.5'
+                  }}>
+                    Dopamina cae 67% → Ella siente "alivio"
+                  </div>
+                </div>
+
+                {/* Fase 2 */}
+                <div style={{
+                  background: 'rgba(234, 179, 8, 0.15)',
+                  border: '2px solid rgb(234, 179, 8)',
+                  borderRadius: '12px',
+                  padding: '20px',
+                  transition: 'transform 0.2s'
+                }}>
+                  <div style={{ 
+                    color: 'rgb(250, 204, 21)', 
+                    fontWeight: '900',
+                    fontSize: 'clamp(1rem, 3vw, 1.125rem)',
+                    marginBottom: '8px'
+                  }}>
+                    FASE 2 (24-48h)
+                  </div>
+                  <div style={{ 
+                    color: 'white',
+                    fontSize: 'clamp(0.9rem, 2.5vw, 1rem)',
+                    lineHeight: '1.5'
+                  }}>
+                    Oxitocina se desconecta → Ella "olvida" los buenos momentos
+                  </div>
+                </div>
+
+                {/* Fase 3 */}
+                <div style={{
+                  background: 'rgba(234, 179, 8, 0.15)',
+                  border: '2px solid rgb(234, 179, 8)',
+                  borderRadius: '12px',
+                  padding: '20px',
+                  transition: 'transform 0.2s'
+                }}>
+                  <div style={{ 
+                    color: 'rgb(250, 204, 21)', 
+                    fontWeight: '900',
+                    fontSize: 'clamp(1rem, 3vw, 1.125rem)',
+                    marginBottom: '8px'
+                  }}>
+                    FASE 3 (48-72h)
+                  </div>
+                  <div style={{ 
+                    color: 'white',
+                    fontSize: 'clamp(0.9rem, 2.5vw, 1rem)',
+                    lineHeight: '1.5'
+                  }}>
+                    Córtex prefrontal reescribe memorias → Ella te ve diferente
+                  </div>
+                </div>
+              </div>
+
+              {/* CTA da Seção */}
+              <div style={{
+                background: 'rgba(239, 68, 68, 0.2)',
+                border: '2px solid rgb(248, 113, 113)',
+                borderRadius: '12px',
+                padding: '24px',
+                textAlign: 'center'
+              }}>
+                <p style={{ 
+                  color: 'white', 
+                  fontSize: 'clamp(1.125rem, 3.5vw, 1.5rem)', 
+                  fontWeight: '900',
+                  margin: 0,
+                  lineHeight: '1.4'
+                }}>
+                  ¿Sabes qué hacer en cada fase?
+                </p>
+                <p style={{
+                  color: 'rgb(252, 165, 165)',
+                  fontSize: 'clamp(0.9rem, 2.5vw, 1rem)',
+                  marginTop: '12px',
+                  marginBottom: 0
+                }}>
+                  El video abajo revela todo el protocolo paso a paso
+                </p>
+              </div>
+
             </div>
           </div>
         )}
 
         {/* ========================================
-            REVELACIÓN 2: VSL COM VÍDEO VTURB (MELHORADO)
+            REVELACIÓN 2: VSL COM VÍDEO VTURB
             ======================================== */}
         {revelation2 && (
           <div className="revelation fade-in vsl-revelation">
@@ -308,7 +341,6 @@ export default function Result({ onNavigate }: ResultProps) {
               <h2>Mira Tu Plan Personalizado</h2>
             </div>
             <div className="vsl-container">
-              {/* ✅ NOVO: Container do vídeo VTurb */}
               <div 
                 ref={videoContainerRef}
                 style={{ 
@@ -325,7 +357,7 @@ export default function Result({ onNavigate }: ResultProps) {
         )}
 
         {/* ========================================
-            REVELACIÓN 3: OFERTA (MANTIDA ORIGINAL)
+            REVELACIÓN 3: OFERTA
             ======================================== */}
         {revelation3 && (
           <div className="revelation fade-in offer-revelation">
