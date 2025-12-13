@@ -11,12 +11,14 @@ interface ResultProps {
 export default function Result({ onNavigate }: ResultProps) {
   const [revelation1, setRevelation1] = useState(false);
   const [revelation2, setRevelation2] = useState(false);
+  const [showOfferButton, setShowOfferButton] = useState(false);
   const [revelation3, setRevelation3] = useState(false);
   const [revelation4, setRevelation4] = useState(false);
   const [timeLeft, setTimeLeft] = useState(47 * 60);
   const [spotsLeft, setSpotsLeft] = useState(storage.getSpotsLeft());
   const quizData = storage.getQuizData();
   const videoContainerRef = useRef<HTMLDivElement>(null);
+  const offerSectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     tracking.pageView('resultado');
@@ -31,16 +33,12 @@ export default function Result({ onNavigate }: ResultProps) {
       tracking.revelationViewed('72h_window');
     }, 6000);
 
+    // ✅ NOVO: Mostra botão da oferta após VSL
     const timer3 = setTimeout(() => {
-      setRevelation3(true);
+      setShowOfferButton(true);
       tracking.revelationViewed('vsl');
       tracking.vslEvent('started');
     }, 9000);
-
-    const timer4 = setTimeout(() => {
-      setRevelation4(true);
-      tracking.revelationViewed('offer');
-    }, 12000);
 
     const countdownInterval = setInterval(() => {
       setTimeLeft(prev => {
@@ -67,7 +65,6 @@ export default function Result({ onNavigate }: ResultProps) {
       clearTimeout(timer1);
       clearTimeout(timer2);
       clearTimeout(timer3);
-      clearTimeout(timer4);
       clearInterval(countdownInterval);
       clearInterval(spotsInterval);
     };
@@ -132,6 +129,29 @@ export default function Result({ onNavigate }: ResultProps) {
     window.open(getHotmartUrl(), '_blank');
   };
 
+  // ✅ NOVA FUNÇÃO: Revelar oferta com scroll suave
+  const handleRevealOffer = () => {
+    playKeySound();
+    setRevelation3(true);
+    tracking.revelationViewed('offer');
+    tracking.ctaClicked('reveal_offer_button');
+    
+    // Scroll suave até a oferta após 300ms (tempo da animação)
+    setTimeout(() => {
+      if (offerSectionRef.current) {
+        offerSectionRef.current.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'start' 
+        });
+      }
+    }, 300);
+
+    // Mostra sticky CTA após 3 segundos
+    setTimeout(() => {
+      setRevelation4(true);
+    }, 3000);
+  };
+
   const getPersonalizedText = () => {
     const gender = quizData.gender === 'HOMBRE' ? 'conquistarla' : 'conquistarlo';
     const time = quizData.timeSeparation || 'hace poco';
@@ -151,7 +171,7 @@ export default function Result({ onNavigate }: ResultProps) {
 
       <div className="revelations-container">
         {/* ========================================
-            REVELACIÓN 1: VENTANA 72H - MOBILE OPTIMIZADO
+            REVELACIÓN 1: VENTANA 72H
             ======================================== */}
         {revelation1 && (
           <div className="revelation fade-in">
@@ -161,7 +181,6 @@ export default function Result({ onNavigate }: ResultProps) {
             </div>
             <p className="revelation-text">{getPersonalizedText()}</p>
 
-            {/* ✅ MOBILE OPTIMIZADO - Padding e espaçamento generosos */}
             <div style={{
               background: 'linear-gradient(135deg, rgba(220, 38, 38, 0.15) 0%, rgba(239, 68, 68, 0.05) 100%)',
               border: '2px solid rgb(239, 68, 68)',
@@ -358,7 +377,7 @@ export default function Result({ onNavigate }: ResultProps) {
         )}
 
         {/* ========================================
-            REVELACIÓN 2: VSL COM VÍDEO VTURB
+            REVELACIÓN 2: VSL
             ======================================== */}
         {revelation2 && (
           <div className="revelation fade-in vsl-revelation">
@@ -383,15 +402,109 @@ export default function Result({ onNavigate }: ResultProps) {
         )}
 
         {/* ========================================
-            REVELACIÓN 3: OFERTA - MOBILE OPTIMIZADO
+            BOTÃO REVELAR OFERTA (NOVO)
+            ======================================== */}
+        {showOfferButton && !revelation3 && (
+          <div className="revelation fade-in" style={{
+            textAlign: 'center',
+            padding: 'clamp(32px, 8vw, 64px) clamp(16px, 4vw, 24px)',
+            marginTop: 'clamp(24px, 6vw, 32px)'
+          }}>
+            <div style={{
+              background: 'linear-gradient(135deg, rgba(234, 179, 8, 0.2) 0%, rgba(202, 138, 4, 0.1) 100%)',
+              border: '3px solid rgb(234, 179, 8)',
+              borderRadius: '16px',
+              padding: 'clamp(32px, 7vw, 48px) clamp(20px, 5vw, 32px)',
+              boxShadow: '0 12px 48px rgba(234, 179, 8, 0.4)',
+              animation: 'pulse 2s infinite'
+            }}>
+              <div style={{
+                fontSize: 'clamp(2.5rem, 8vw, 3.5rem)',
+                marginBottom: 'clamp(16px, 4vw, 24px)'
+              }}>🎁</div>
+              
+              <h2 style={{
+                fontSize: 'clamp(1.5rem, 6vw, 2.25rem)',
+                fontWeight: '900',
+                color: 'white',
+                marginBottom: 'clamp(16px, 4vw, 24px)',
+                lineHeight: '1.3'
+              }}>
+                Tu Oferta Exclusiva Está Lista
+              </h2>
+              
+              <p style={{
+                fontSize: 'clamp(1rem, 4vw, 1.25rem)',
+                color: 'rgb(253, 224, 71)',
+                marginBottom: 'clamp(24px, 6vw, 32px)',
+                lineHeight: '1.5',
+                fontWeight: '600'
+              }}>
+                Acceso inmediato al Plan Completo de 21 Días
+              </p>
+
+              <button
+                onClick={handleRevealOffer}
+                style={{
+                  width: '100%',
+                  maxWidth: '500px',
+                  background: 'rgb(234, 179, 8)',
+                  color: 'black',
+                  fontWeight: '900',
+                  padding: 'clamp(20px, 5vw, 28px) clamp(24px, 6vw, 32px)',
+                  borderRadius: '16px',
+                  fontSize: 'clamp(1.25rem, 5vw, 1.75rem)',
+                  border: '4px solid white',
+                  cursor: 'pointer',
+                  boxShadow: '0 8px 32px rgba(234, 179, 8, 0.5)',
+                  transition: 'all 0.3s ease',
+                  minHeight: 'clamp(64px, 16vw, 80px)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  margin: '0 auto',
+                  lineHeight: '1.3',
+                  animation: 'scaleUp 1.5s ease-in-out infinite'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'scale(1.05)';
+                  e.currentTarget.style.boxShadow = '0 12px 48px rgba(234, 179, 8, 0.7)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'scale(1)';
+                  e.currentTarget.style.boxShadow = '0 8px 32px rgba(234, 179, 8, 0.5)';
+                }}
+              >
+                🔓 VER MI OFERTA EXCLUSIVA
+              </button>
+
+              <p style={{
+                fontSize: 'clamp(0.875rem, 3.5vw, 1rem)',
+                color: 'rgb(252, 165, 165)',
+                marginTop: 'clamp(16px, 4vw, 20px)',
+                fontWeight: '600',
+                lineHeight: '1.5'
+              }}>
+                ⏰ Precio especial válido solo por {formatTime(timeLeft)}
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* ========================================
+            REVELACIÓN 3: OFERTA (Só aparece após clicar)
             ======================================== */}
         {revelation3 && (
-          <div className="revelation fade-in offer-revelation" style={{
-            position: 'relative',
-            padding: 'clamp(20px, 5vw, 32px)'
-          }}>
+          <div 
+            ref={offerSectionRef}
+            className="revelation fade-in offer-revelation" 
+            style={{
+              position: 'relative',
+              padding: 'clamp(20px, 5vw, 32px)',
+              scrollMarginTop: '80px'
+            }}
+          >
             
-            {/* ✅ Badge reposicionado - não sobrepõe mais */}
             <div style={{
               background: 'rgb(234, 179, 8)',
               color: 'black',
@@ -420,7 +533,6 @@ export default function Result({ onNavigate }: ResultProps) {
               </h2>
             </div>
 
-            {/* ✅ Features com espaçamento otimizado */}
             <div className="offer-features" style={{
               display: 'flex',
               flexDirection: 'column',
@@ -609,7 +721,6 @@ export default function Result({ onNavigate }: ResultProps) {
               </div>
             </div>
 
-            {/* ✅ Botão otimizado para mobile */}
             <button 
               className="cta-buy" 
               onClick={handleCTAClick}
@@ -637,7 +748,6 @@ export default function Result({ onNavigate }: ResultProps) {
               COMPRAR AHORA
             </button>
 
-            {/* ✅ Texto abaixo do botão - legível */}
             <p className="social-proof-count" style={{
               textAlign: 'center',
               color: 'rgb(74, 222, 128)',
@@ -707,6 +817,42 @@ export default function Result({ onNavigate }: ResultProps) {
           </button>
         </div>
       )}
+
+      {/* ✅ ANIMAÇÕES CSS */}
+      <style jsx>{`
+        @keyframes pulse {
+          0%, 100% {
+            box-shadow: 0 12px 48px rgba(234, 179, 8, 0.4);
+          }
+          50% {
+            box-shadow: 0 12px 64px rgba(234, 179, 8, 0.6);
+          }
+        }
+
+        @keyframes scaleUp {
+          0%, 100% {
+            transform: scale(1);
+          }
+          50% {
+            transform: scale(1.02);
+          }
+        }
+
+        .fade-in {
+          animation: fadeIn 0.6s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      `}</style>
     </div>
   );
 }
