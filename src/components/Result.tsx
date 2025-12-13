@@ -4,6 +4,19 @@ import { storage } from '../utils/storage';
 import { playKeySound, getHotmartUrl } from '../utils/animations';
 import { QuizAnswer } from '../types/quiz';
 
+// ✅ NOVOS IMPORTS
+import { 
+  getTitle, 
+  getLoadingMessage, 
+  getCopy, 
+  getVentana72Copy,
+  getOfferTitle,
+  getFeatures, 
+  getCTA,
+  getFaseText
+} from '../utils/contentByGender';
+import { getEmotionalValidation, getSituationInsight } from '../utils/emotionalValidation';
+
 interface ResultProps {
   onNavigate: (page: string) => void;
 }
@@ -17,7 +30,6 @@ export default function Result({ onNavigate }: ResultProps) {
   const [timeLeft, setTimeLeft] = useState(47 * 60);
   const [spotsLeft, setSpotsLeft] = useState(storage.getSpotsLeft());
   
-  // ✅ NOVO: Estados do loading
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [loadingStep, setLoadingStep] = useState(0);
   
@@ -25,18 +37,19 @@ export default function Result({ onNavigate }: ResultProps) {
   const videoContainerRef = useRef<HTMLDivElement>(null);
   const offerSectionRef = useRef<HTMLDivElement>(null);
 
-  // ✅ NOVO: Etapas do loading
+  // ✅ VARIÁVEL PARA FACILITAR O USO
+  const gender = quizData.gender || 'HOMBRE';
+
   const loadingSteps = [
     { icon: '📊', text: 'Respuestas procesadas', duration: 0 },
     { icon: '🔍', text: 'Identificando patrones...', duration: 2000 },
     { icon: '🧠', text: 'Generando diagnóstico...', duration: 4000 },
-    { icon: '📋', text: 'Preparando plan personalizado...', duration: 6000 }
+    { icon: '📋', text: getLoadingMessage(gender), duration: 6000 } // ✅ PERSONALIZADO
   ];
 
   useEffect(() => {
     tracking.pageView('resultado');
 
-    // ✅ NOVO: Animação do progress bar
     const progressInterval = setInterval(() => {
       setLoadingProgress(prev => {
         if (prev >= 100) {
@@ -47,7 +60,6 @@ export default function Result({ onNavigate }: ResultProps) {
       });
     }, 100);
 
-    // ✅ NOVO: Atualização das etapas
     loadingSteps.forEach((step, index) => {
       setTimeout(() => {
         setLoadingStep(index);
@@ -57,18 +69,18 @@ export default function Result({ onNavigate }: ResultProps) {
     const timer1 = setTimeout(() => {
       setRevelation1(true);
       tracking.revelationViewed('why_left');
-    }, 0);
+    }, 6500);
 
     const timer2 = setTimeout(() => {
       setRevelation2(true);
       tracking.revelationViewed('72h_window');
-    }, 6000);
+    }, 12500);
 
     const timer3 = setTimeout(() => {
       setShowOfferButton(true);
       tracking.revelationViewed('vsl');
       tracking.vslEvent('started');
-    }, 9000);
+    }, 15500);
 
     const countdownInterval = setInterval(() => {
       setTimeLeft(prev => {
@@ -179,13 +191,6 @@ export default function Result({ onNavigate }: ResultProps) {
     }, 3000);
   };
 
-  const getPersonalizedText = () => {
-    const gender = quizData.gender === 'HOMBRE' ? 'conquistarla' : 'conquistarlo';
-    const time = quizData.timeSeparation || 'hace poco';
-
-    return `No fue por falta de amor, sino por haber dejado de ser quien ${gender}. Basado en tu tiempo de separación (${time}), evita errores comunes post-ruptura como suplicar o entrar mal en la friendzone.`;
-  };
-
   return (
     <div className="result-container">
       <div className="result-header">
@@ -199,7 +204,7 @@ export default function Result({ onNavigate }: ResultProps) {
       <div className="revelations-container">
         
         {/* ========================================
-            LOADING INICIAL - Progress Bar com Etapas
+            LOADING INICIAL
             ======================================== */}
         {!revelation1 && (
           <div className="revelation fade-in" style={{
@@ -219,7 +224,6 @@ export default function Result({ onNavigate }: ResultProps) {
               boxShadow: '0 12px 48px rgba(234, 179, 8, 0.3)'
             }}>
               
-              {/* Título */}
               <div style={{ textAlign: 'center', marginBottom: 'clamp(24px, 6vw, 32px)' }}>
                 <div style={{
                   fontSize: 'clamp(3rem, 10vw, 4rem)',
@@ -242,11 +246,10 @@ export default function Result({ onNavigate }: ResultProps) {
                   color: 'rgb(253, 224, 71)',
                   fontWeight: '600'
                 }}>
-                  Generando tu plan personalizado...
+                  {getLoadingMessage(gender)}
                 </p>
               </div>
 
-              {/* Etapas */}
               <div style={{
                 marginBottom: 'clamp(24px, 6vw, 32px)',
                 display: 'flex',
@@ -291,7 +294,6 @@ export default function Result({ onNavigate }: ResultProps) {
                 ))}
               </div>
 
-              {/* Progress Bar */}
               <div style={{
                 marginBottom: 'clamp(16px, 4vw, 20px)'
               }}>
@@ -313,7 +315,6 @@ export default function Result({ onNavigate }: ResultProps) {
                 </div>
               </div>
 
-              {/* Porcentagem e Tempo */}
               <div style={{
                 display: 'flex',
                 justifyContent: 'space-between',
@@ -326,7 +327,6 @@ export default function Result({ onNavigate }: ResultProps) {
                 <span>⏱️ {Math.ceil((100 - loadingProgress) / 10)} segundos...</span>
               </div>
 
-              {/* Mensagem de Tranquilização */}
               <div style={{
                 marginTop: 'clamp(24px, 6vw, 32px)',
                 padding: 'clamp(16px, 4vw, 20px)',
@@ -350,15 +350,40 @@ export default function Result({ onNavigate }: ResultProps) {
         )}
 
         {/* ========================================
-            REVELACIÓN 1: VENTANA 72H
+            REVELACIÓN 1: POR QUÉ TE DEJÓ
             ======================================== */}
         {revelation1 && (
           <div className="revelation fade-in">
             <div className="revelation-header">
               <div className="revelation-icon">💔</div>
-              <h2>Por Qué Te Dejó</h2>
+              {/* ✅ TÍTULO PERSONALIZADO */}
+              <h2>{getTitle(gender)}</h2>
             </div>
-            <p className="revelation-text">{getPersonalizedText()}</p>
+            
+            {/* ✅ COPY PERSONALIZADO */}
+            <p className="revelation-text" style={{ whiteSpace: 'pre-line', lineHeight: '1.8' }}>
+              {getCopy(quizData)}
+            </p>
+
+            {/* ✅ VALIDAÇÃO EMOCIONAL */}
+            <div style={{
+              background: 'rgba(74, 222, 128, 0.1)',
+              border: '2px solid rgba(74, 222, 128, 0.3)',
+              borderRadius: '12px',
+              padding: 'clamp(16px, 4vw, 24px)',
+              marginTop: 'clamp(20px, 5vw, 28px)',
+              marginBottom: 'clamp(20px, 5vw, 28px)'
+            }}>
+              <p style={{
+                color: 'rgb(74, 222, 128)',
+                fontSize: 'clamp(0.9rem, 3.5vw, 1.125rem)',
+                lineHeight: '1.7',
+                margin: 0
+              }}>
+                <strong>Tu situación específica:</strong><br />
+                {getEmotionalValidation(quizData)}
+              </p>
+            </div>
 
             <div style={{
               background: 'linear-gradient(135deg, rgba(220, 38, 38, 0.15) 0%, rgba(239, 68, 68, 0.05) 100%)',
@@ -411,9 +436,8 @@ export default function Result({ onNavigate }: ResultProps) {
                 }}>
                   Después de una ruptura, el cerebro de tu ex pasa por <strong style={{ color: 'rgb(250, 204, 21)' }}>3 fases químicas</strong> en 72 horas.
                   <br /><br />
-                  Si actúas <strong style={{ color: 'rgb(74, 222, 128)' }}>CORRECTO</strong>, ella te busca.
-                  <br />
-                  Si actúas <strong style={{ color: 'rgb(248, 113, 113)' }}>INCORRECTO</strong>, su cerebro borra la atracción.
+                  {/* ✅ COPY PERSONALIZADO */}
+                  <span style={{ whiteSpace: 'pre-line' }}>{getVentana72Copy(gender)}</span>
                 </p>
               </div>
 
@@ -422,80 +446,33 @@ export default function Result({ onNavigate }: ResultProps) {
                 gap: 'clamp(16px, 4vw, 20px)',
                 marginBottom: 'clamp(24px, 5vw, 32px)'
               }}>
-                <div style={{
-                  background: 'rgba(234, 179, 8, 0.15)',
-                  border: '2px solid rgb(234, 179, 8)',
-                  borderRadius: '12px',
-                  padding: 'clamp(16px, 4vw, 24px)',
-                  transition: 'transform 0.2s'
-                }}>
-                  <div style={{ 
-                    color: 'rgb(250, 204, 21)', 
-                    fontWeight: '900',
-                    fontSize: 'clamp(1rem, 4vw, 1.25rem)',
-                    marginBottom: 'clamp(8px, 2vw, 12px)',
-                    lineHeight: '1.3'
+                {[1, 2, 3].map((fase) => (
+                  <div key={fase} style={{
+                    background: 'rgba(234, 179, 8, 0.15)',
+                    border: '2px solid rgb(234, 179, 8)',
+                    borderRadius: '12px',
+                    padding: 'clamp(16px, 4vw, 24px)',
+                    transition: 'transform 0.2s'
                   }}>
-                    FASE 1 (0-24h)
+                    <div style={{ 
+                      color: 'rgb(250, 204, 21)', 
+                      fontWeight: '900',
+                      fontSize: 'clamp(1rem, 4vw, 1.25rem)',
+                      marginBottom: 'clamp(8px, 2vw, 12px)',
+                      lineHeight: '1.3'
+                    }}>
+                      FASE {fase} ({fase === 1 ? '0-24h' : fase === 2 ? '24-48h' : '48-72h'})
+                    </div>
+                    <div style={{ 
+                      color: 'white',
+                      fontSize: 'clamp(0.9rem, 3.5vw, 1.125rem)',
+                      lineHeight: '1.6'
+                    }}>
+                      {/* ✅ TEXTO PERSONALIZADO DAS FASES */}
+                      {getFaseText(gender, fase)}
+                    </div>
                   </div>
-                  <div style={{ 
-                    color: 'white',
-                    fontSize: 'clamp(0.9rem, 3.5vw, 1.125rem)',
-                    lineHeight: '1.6'
-                  }}>
-                    Dopamina cae 67% → Ella siente "alivio"
-                  </div>
-                </div>
-
-                <div style={{
-                  background: 'rgba(234, 179, 8, 0.15)',
-                  border: '2px solid rgb(234, 179, 8)',
-                  borderRadius: '12px',
-                  padding: 'clamp(16px, 4vw, 24px)',
-                  transition: 'transform 0.2s'
-                }}>
-                  <div style={{ 
-                    color: 'rgb(250, 204, 21)', 
-                    fontWeight: '900',
-                    fontSize: 'clamp(1rem, 4vw, 1.25rem)',
-                    marginBottom: 'clamp(8px, 2vw, 12px)',
-                    lineHeight: '1.3'
-                  }}>
-                    FASE 2 (24-48h)
-                  </div>
-                  <div style={{ 
-                    color: 'white',
-                    fontSize: 'clamp(0.9rem, 3.5vw, 1.125rem)',
-                    lineHeight: '1.6'
-                  }}>
-                    Oxitocina se desconecta → Ella "olvida" los buenos momentos
-                  </div>
-                </div>
-
-                <div style={{
-                  background: 'rgba(234, 179, 8, 0.15)',
-                  border: '2px solid rgb(234, 179, 8)',
-                  borderRadius: '12px',
-                  padding: 'clamp(16px, 4vw, 24px)',
-                  transition: 'transform 0.2s'
-                }}>
-                  <div style={{ 
-                    color: 'rgb(250, 204, 21)', 
-                    fontWeight: '900',
-                    fontSize: 'clamp(1rem, 4vw, 1.25rem)',
-                    marginBottom: 'clamp(8px, 2vw, 12px)',
-                    lineHeight: '1.3'
-                  }}>
-                    FASE 3 (48-72h)
-                  </div>
-                  <div style={{ 
-                    color: 'white',
-                    fontSize: 'clamp(0.9rem, 3.5vw, 1.125rem)',
-                    lineHeight: '1.6'
-                  }}>
-                    Córtex prefrontal reescribe memorias → Ella te ve diferente
-                  </div>
-                </div>
+                ))}
               </div>
 
               <div style={{
@@ -574,7 +551,6 @@ export default function Result({ onNavigate }: ResultProps) {
                   borderRadius: '8px'
                 }}
               >
-                {/* O vídeo será inserido aqui dinamicamente */}
               </div>
             </div>
           </div>
@@ -702,31 +678,56 @@ export default function Result({ onNavigate }: ResultProps) {
 
             <div className="revelation-header" style={{ marginTop: 0 }}>
               <div className="revelation-icon">🎯</div>
+              {/* ✅ TÍTULO DA OFERTA PERSONALIZADO */}
               <h2 style={{ 
                 fontSize: 'clamp(1.5rem, 6vw, 2rem)',
                 lineHeight: '1.3',
                 marginBottom: 'clamp(20px, 5vw, 24px)',
                 padding: '0 8px'
               }}>
-                Plan de Reconquista Personalizado
+                {getOfferTitle(gender)}
               </h2>
             </div>
 
+            {/* ✅ MOSTRAR DADOS DO QUIZ */}
+            <div style={{
+              background: 'rgba(234, 179, 8, 0.1)',
+              border: '2px solid rgba(234, 179, 8, 0.3)',
+              borderRadius: '12px',
+              padding: 'clamp(16px, 4vw, 20px)',
+              marginBottom: 'clamp(24px, 5vw, 32px)'
+            }}>
+              <p style={{
+                fontSize: 'clamp(0.875rem, 3.5vw, 1rem)',
+                color: 'rgb(253, 224, 71)',
+                marginBottom: 'clamp(12px, 3vw, 16px)',
+                fontWeight: 'bold'
+              }}>
+                Basado en tu situación específica:
+              </p>
+              <ul style={{
+                listStyle: 'none',
+                padding: 0,
+                margin: 0,
+                fontSize: 'clamp(0.875rem, 3.5vw, 1rem)',
+                color: 'white',
+                lineHeight: '1.8'
+              }}>
+                <li>✓ Tiempo de separación: <strong>{quizData.timeSeparation}</strong></li>
+                <li>✓ Quién terminó: <strong>{quizData.whoEnded}</strong></li>
+                <li>✓ Situación actual: <strong>{quizData.currentSituation}</strong></li>
+                <li>✓ Tu nivel de compromiso: <strong>{quizData.commitmentLevel}</strong></li>
+              </ul>
+            </div>
+
+            {/* ✅ FEATURES PERSONALIZADAS */}
             <div className="offer-features" style={{
               display: 'flex',
               flexDirection: 'column',
               gap: 'clamp(12px, 3vw, 16px)',
               marginBottom: 'clamp(24px, 5vw, 32px)'
             }}>
-              {[
-                '📱 MÓDULO 1: Conversaciones (Días 1-7)',
-                '👥 MÓDULO 2: Encuentros (Días 8-14)',
-                '❤️ MÓDULO 3: Reconquista (Días 15-21)',
-                '🚨 MÓDULO 4: Protocolo de Emergencia',
-                'Guía especial: Ventana de 72 Horas',
-                'Bonos de acción inmediata',
-                'Garantía de 30 días'
-              ].map((feature, index) => (
+              {getFeatures(gender).map((feature, index) => (
                 <div key={index} className="feature" style={{
                   display: 'flex',
                   alignItems: 'flex-start',
@@ -790,6 +791,7 @@ export default function Result({ onNavigate }: ResultProps) {
               </div>
             </div>
 
+            {/* ✅ CTA PERSONALIZADO */}
             <button 
               className="cta-buy" 
               onClick={handleCTAClick}
@@ -814,7 +816,7 @@ export default function Result({ onNavigate }: ResultProps) {
               }}
             >
               <span className="cta-glow"></span>
-              COMPRAR AHORA
+              {getCTA(gender)}
             </button>
 
             <p className="social-proof-count" style={{
@@ -863,6 +865,7 @@ export default function Result({ onNavigate }: ResultProps) {
           }}>
             ⏰ {formatTime(timeLeft)} • {spotsLeft} spots restantes
           </div>
+          {/* ✅ CTA STICKY PERSONALIZADO */}
           <button 
             className="cta-buy-sticky" 
             onClick={handleCTAClick}
@@ -882,12 +885,11 @@ export default function Result({ onNavigate }: ResultProps) {
               justifyContent: 'center'
             }}
           >
-            COMPRAR AHORA
+            {getCTA(gender)}
           </button>
         </div>
       )}
 
-      {/* ✅ ANIMAÇÕES CSS */}
       <style jsx>{`
         @keyframes spin {
           from {

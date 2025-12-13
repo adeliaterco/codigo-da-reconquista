@@ -3,6 +3,7 @@ import { tracking } from '../utils/tracking';
 import { storage } from '../utils/storage';
 import { playKeySound } from '../utils/animations';
 import { QuizAnswer } from '../types/quiz';
+import { getCompletionBadge } from '../utils/contentByGender'; // ✅ NOVO IMPORT
 
 interface ChatProps {
   onNavigate: (page: string) => void;
@@ -14,7 +15,6 @@ interface Message {
   isTyping?: boolean;
 }
 
-// ✅ MUDANÇA #1: Interface atualizada com responseByGender opcional
 interface Question {
   id: number;
   text: string;
@@ -27,7 +27,6 @@ interface Question {
   dataKey: 'gender' | 'timeSeparation' | 'whoEnded' | 'relationshipDuration' | 'currentSituation' | 'exSituation' | 'commitmentLevel';
 }
 
-// ✅ MUDANÇA #2: Array de perguntas com respostas personalizadas por gênero
 const QUESTIONS: Question[] = [
   {
     id: 1,
@@ -166,7 +165,6 @@ export default function Chat({ onNavigate }: ChatProps) {
     }, question.text.length * 50);
   };
 
-  // ✅ MUDANÇA #3: Função handleAnswer com lógica de personalização por gênero
   const handleAnswer = (option: string) => {
     playKeySound();
     const question = QUESTIONS[currentQuestion];
@@ -194,11 +192,9 @@ export default function Chat({ onNavigate }: ChatProps) {
     setTimeout(() => {
       setIsProcessing(false);
 
-      // ✅ NOVA LÓGICA: Seleciona resposta personalizada por gênero ou usa resposta padrão
-      let responseText = question.response; // Fallback padrão
+      let responseText = question.response;
       
       if (question.responseByGender && quizData.gender) {
-        // Se existe resposta por gênero E o gênero já foi definido
         const gender = quizData.gender as 'HOMBRE' | 'MUJER';
         responseText = question.responseByGender[gender] || question.response;
       }
@@ -235,7 +231,7 @@ export default function Chat({ onNavigate }: ChatProps) {
             }, finalMessage.text.length * 50);
           }, 1000);
         }
-      }, responseText.length * 50); // ✅ Usa responseText (que pode ser mais longo agora)
+      }, responseText.length * 50);
     }, 1500);
   };
 
@@ -245,6 +241,9 @@ export default function Chat({ onNavigate }: ChatProps) {
   };
 
   const isComplete = progress === 100;
+  
+  // ✅ PEGAR O quizData PARA USAR NO COMPLETION BADGE
+  const quizData = storage.getQuizData();
 
   return (
     <div className="chat-container">
@@ -296,9 +295,41 @@ export default function Chat({ onNavigate }: ChatProps) {
           </div>
         )}
 
+        {/* ✅ COMPLETION BADGE PERSONALIZADO */}
         {showOptions && isComplete && (
           <div className="options-container">
-            <div className="completion-badge">¡PLAN DESBLOQUEADO!</div>
+            <div 
+              className="completion-badge" 
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '12px',
+                padding: '24px',
+                background: 'linear-gradient(135deg, rgba(234, 179, 8, 0.2), rgba(74, 222, 128, 0.1))',
+                borderRadius: '16px',
+                marginBottom: '16px',
+                border: '2px solid rgba(234, 179, 8, 0.5)',
+                boxShadow: '0 8px 24px rgba(234, 179, 8, 0.3)'
+              }}
+            >
+              <div style={{
+                fontSize: 'clamp(1.5rem, 5vw, 2rem)',
+                fontWeight: '900',
+                color: 'rgb(250, 204, 21)',
+                textAlign: 'center',
+                lineHeight: '1.3'
+              }}>
+                {getCompletionBadge(quizData.gender || 'HOMBRE').title}
+              </div>
+              <div style={{
+                fontSize: 'clamp(1rem, 4vw, 1.25rem)',
+                color: 'white',
+                lineHeight: '1.6',
+                textAlign: 'center'
+              }}>
+                {getCompletionBadge(quizData.gender || 'HOMBRE').subtitle}
+              </div>
+            </div>
             <button className="option-button cta-final" onClick={handleViewPlan}>
               VER MI PLAN PERSONALIZADO
             </button>
