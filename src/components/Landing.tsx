@@ -52,6 +52,10 @@ export default function Landing({ onNavigate }: LandingProps) {
 
       <div className="content-wrapper">
         <header className="landing-header">
+          <div className="avatar-container">
+            <div className="avatar-placeholder">RA</div>
+            <p className="avatar-label">Ricardo Abreu</p>
+          </div>
         </header>
 
         <main className="landing-main">
