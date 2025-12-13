@@ -151,7 +151,7 @@ export default function Result({ onNavigate }: ResultProps) {
 
       <div className="revelations-container">
         {/* ========================================
-            REVELACIÓN 1: VERSÃO MINIMALISTA COM IMAGEM
+            REVELACIÓN 1: VENTANA 72H COM IMAGEM
             ======================================== */}
         {revelation1 && (
           <div className="revelation fade-in">
@@ -161,7 +161,6 @@ export default function Result({ onNavigate }: ResultProps) {
             </div>
             <p className="revelation-text">{getPersonalizedText()}</p>
 
-            {/* ✅ VERSÃO MINIMALISTA - LIMPA E DIRETA */}
             <div style={{
               background: 'linear-gradient(135deg, rgba(220, 38, 38, 0.15) 0%, rgba(239, 68, 68, 0.05) 100%)',
               border: '2px solid rgb(239, 68, 68)',
@@ -171,7 +170,6 @@ export default function Result({ onNavigate }: ResultProps) {
               boxShadow: '0 8px 32px rgba(239, 68, 68, 0.2)'
             }}>
               
-              {/* Título Principal */}
               <div style={{ textAlign: 'center', marginBottom: '32px' }}>
                 <div style={{
                   fontSize: '3rem',
@@ -195,7 +193,6 @@ export default function Result({ onNavigate }: ResultProps) {
                 </p>
               </div>
 
-              {/* Texto Principal Enxuto */}
               <div style={{
                 background: 'rgba(0, 0, 0, 0.4)',
                 borderRadius: '12px',
@@ -218,13 +215,11 @@ export default function Result({ onNavigate }: ResultProps) {
                 </p>
               </div>
 
-              {/* 3 Fases - Cards Minimalistas */}
               <div style={{
                 display: 'grid',
                 gap: '16px',
                 marginBottom: '28px'
               }}>
-                {/* Fase 1 */}
                 <div style={{
                   background: 'rgba(234, 179, 8, 0.15)',
                   border: '2px solid rgb(234, 179, 8)',
@@ -249,7 +244,6 @@ export default function Result({ onNavigate }: ResultProps) {
                   </div>
                 </div>
 
-                {/* Fase 2 */}
                 <div style={{
                   background: 'rgba(234, 179, 8, 0.15)',
                   border: '2px solid rgb(234, 179, 8)',
@@ -274,7 +268,6 @@ export default function Result({ onNavigate }: ResultProps) {
                   </div>
                 </div>
 
-                {/* Fase 3 */}
                 <div style={{
                   background: 'rgba(234, 179, 8, 0.15)',
                   border: '2px solid rgb(234, 179, 8)',
@@ -300,7 +293,6 @@ export default function Result({ onNavigate }: ResultProps) {
                 </div>
               </div>
 
-              {/* ✅ IMAGEM ADICIONADA AQUI */}
               <div style={{
                 marginTop: '32px',
                 marginBottom: '32px',
@@ -327,7 +319,6 @@ export default function Result({ onNavigate }: ResultProps) {
                 />
               </div>
 
-              {/* CTA da Seção */}
               <div style={{
                 background: 'rgba(239, 68, 68, 0.2)',
                 border: '2px solid rgb(248, 113, 113)',
@@ -384,7 +375,7 @@ export default function Result({ onNavigate }: ResultProps) {
         )}
 
         {/* ========================================
-            REVELACIÓN 3: OFERTA
+            REVELACIÓN 3: OFERTA COM MÓDULOS DETALHADOS
             ======================================== */}
         {revelation3 && (
           <div className="revelation fade-in offer-revelation">
@@ -395,12 +386,31 @@ export default function Result({ onNavigate }: ResultProps) {
               <h2>Plan de Reconquista Personalizado</h2>
             </div>
 
+            {/* ✅ MÓDULOS DETALHADOS (4 módulos + guia + bônus + garantia) */}
             <div className="offer-features">
               <div className="feature">
                 <svg className="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
                   <polyline points="20 6 9 17 4 12"></polyline>
                 </svg>
-                <span>Módulos exclusivos paso a paso</span>
+                <span>📱 MÓDULO 1: Conversaciones (Días 1-7)</span>
+              </div>
+              <div className="feature">
+                <svg className="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span>👥 MÓDULO 2: Encuentros (Días 8-14)</span>
+              </div>
+              <div className="feature">
+                <svg className="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span>❤️ MÓDULO 3: Reconquista (Días 15-21)</span>
+              </div>
+              <div className="feature">
+                <svg className="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span>🚨 MÓDULO 4: Protocolo de Emergencia</span>
               </div>
               <div className="feature">
                 <svg className="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
@@ -418,7 +428,7 @@ export default function Result({ onNavigate }: ResultProps) {
                 <svg className="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
                   <polyline points="20 6 9 17 4 12"></polyline>
                 </svg>
-                <span>Garantía de 7 días</span>
+                <span>Garantía de 30 días</span>
               </div>
             </div>
 
