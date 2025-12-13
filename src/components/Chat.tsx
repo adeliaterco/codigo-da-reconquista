@@ -19,7 +19,11 @@ interface Message {
 interface Question {
   id: number;
   text: string;
-  options: string[];
+  options?: string[];
+  optionsByGender?: {
+    HOMBRE: string[];
+    MUJER: string[];
+  };
   response: string;
   responseByGender?: {
     HOMBRE: string;
@@ -54,7 +58,10 @@ const QUESTIONS: Question[] = [
   {
     id: 3,
     text: 'Bien. ¿Y cómo fue la separación? ¿Quién tomó la iniciativa?',
-    options: ['ÉL/ELLA TERMINÓ', 'YO TERMINÉ', 'DECISIÓN MUTUA'],
+    optionsByGender: {
+      HOMBRE: ['ELLA TERMINÓ', 'YO TERMINÉ', 'DECISIÓN MUTUA'],
+      MUJER: ['ÉL TERMINÓ', 'YO TERMINÉ', 'DECISIÓN MUTUA']
+    },
     response: 'Correcto.',
     responseByGender: {
       HOMBRE: 'Entiendo. Cuando ella toma la decisión de terminar, significa que algo activó un "switch" emocional en su cerebro. La buena noticia: ese switch puede revertirse si sabes exactamente qué botones presionar. Y eso es lo que vamos a descubrir.',
@@ -87,7 +94,10 @@ const QUESTIONS: Question[] = [
   {
     id: 6,
     text: 'Analizando... Ahora, una información crucial: ¿tu ex-pareja ya está con otra persona?',
-    options: ['ESTÁ SOLTERO/A', 'NO ESTOY SEGURO/A', 'SALIENDO CASUAL', 'RELACIÓN SERIA', 'VARIAS PERSONAS'],
+    optionsByGender: {
+      HOMBRE: ['ESTÁ SOLTERA', 'NO ESTOY SEGURO', 'SALIENDO CASUAL', 'RELACIÓN SERIA', 'VARIAS PERSONAS'],
+      MUJER: ['ESTÁ SOLTERO', 'NO ESTOY SEGURO', 'SALIENDO CASUAL', 'RELACIÓN SERIA', 'VARIAS PERSONAS']
+    },
     response: 'Crucial.',
     responseByGender: {
       HOMBRE: 'Entendido. Esto cambia el mapa, pero no el destino. Incluso si ella está con alguien, hay protocolos psicológicos específicos que funcionan. De hecho, en algunos casos, esto puede ser usado estratégicamente a tu favor.',
@@ -248,6 +258,18 @@ export default function Chat({ onNavigate }: ChatProps) {
     onNavigate('resultado');
   };
 
+  // ✅ FUNÇÃO PARA PEGAR AS OPÇÕES CORRETAS
+  const getQuestionOptions = (question: Question): string[] => {
+    const quizData = storage.getQuizData();
+    
+    if (question.optionsByGender && quizData.gender) {
+      const gender = quizData.gender as 'HOMBRE' | 'MUJER';
+      return question.optionsByGender[gender] || question.options || [];
+    }
+    
+    return question.options || [];
+  };
+
   const isComplete = progress === 100;
   const quizData = storage.getQuizData();
 
@@ -293,7 +315,7 @@ export default function Chat({ onNavigate }: ChatProps) {
 
         {showOptions && currentQuestion >= 0 && currentQuestion < QUESTIONS.length && !isComplete && (
           <div className="options-container">
-            {QUESTIONS[currentQuestion].options.map((option, idx) => (
+            {getQuestionOptions(QUESTIONS[currentQuestion]).map((option, idx) => (
               <button key={idx} className="option-button" onClick={() => handleAnswer(option)}>
                 {option}
               </button>
