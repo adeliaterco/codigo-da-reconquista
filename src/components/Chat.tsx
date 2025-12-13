@@ -242,7 +242,7 @@ export default function Chat({ onNavigate }: ChatProps) {
           </div>
         )}
 
-        {showOptions && currentQuestion >= 0 && currentQuestion < QUESTIONS.length && (
+        {showOptions && currentQuestion >= 0 && currentQuestion < QUESTIONS.length && !isComplete && (
           <div className="options-container">
             {QUESTIONS[currentQuestion].options.map((option, idx) => (
               <button key={idx} className="option-button" onClick={() => handleAnswer(option)}>
