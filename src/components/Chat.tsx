@@ -105,17 +105,20 @@ const QUESTIONS: Question[] = [
     },
     dataKey: 'exSituation',
   },
-  {
-    id: 7,
-    text: 'Última pregunta para finalizar el análisis: en una escala de 1 a 4, ¿cuánto quieres recuperar esta relación?',
-    options: ['1 - NO ESTOY SEGURO/A', '2 - LO ESTOY CONSIDERANDO', '3 - LO QUIERO MUCHO', '4 - LO QUIERO CON TODA MI ALMA'],
-    response: '¡Análisis completo!',
-    responseByGender: {
-      HOMBRE: '¡Análisis completo! Tu nivel de compromiso define la intensidad del protocolo. Cuanto más comprometido estés, más poderosas serán las técnicas que voy a revelarte. Ahora tengo todo lo que necesito para mostrarte el camino exacto para reconquistar a ella.',
-      MUJER: '¡Análisis completo! Tu nivel de compromiso define la intensidad del protocolo. Cuanto más comprometido estés, más poderosas serán las técnicas que voy a revelarte. Ahora tengo todo lo que necesito para mostrarte el camino exacto para reconquistar a él.'
-    },
-    dataKey: 'commitmentLevel',
+{
+  id: 7,
+  text: 'Última pregunta para finalizar el análisis: en una escala de 1 a 4, ¿cuánto quieres recuperar esta relación?',
+  optionsByGender: {
+    HOMBRE: ['1 - NO ESTOY SEGURO', '2 - LO ESTOY CONSIDERANDO', '3 - LO QUIERO MUCHO', '4 - LO QUIERO CON TODA MI ALMA'],
+    MUJER: ['1 - NO ESTOY SEGURA', '2 - LO ESTOY CONSIDERANDO', '3 - LO QUIERO MUCHO', '4 - LO QUIERO CON TODA MI ALMA']
   },
+  response: '¡Análisis completo!',
+  responseByGender: {
+    HOMBRE: '¡Análisis completo! Tu nivel de compromiso define la intensidad del protocolo. Cuanto más comprometido estés, más poderosas serán las técnicas que voy a revelarte. Ahora tengo todo lo que necesito para mostrarte el camino exacto para reconquistar a ella.',
+    MUJER: '¡Análisis completo! Tu nivel de compromiso define la intensidad del protocolo. Cuanto más comprometida estés, más poderosas serán las técnicas que voy a revelarte. Ahora tengo todo lo que necesito para mostrarte el camino exacto para reconquistar a él.'
+  },
+  dataKey: 'commitmentLevel',
+}
 ];
 
 export default function Chat({ onNavigate }: ChatProps) {
