@@ -16,12 +16,43 @@ export default function Result({ onNavigate }: ResultProps) {
   const [revelation4, setRevelation4] = useState(false);
   const [timeLeft, setTimeLeft] = useState(47 * 60);
   const [spotsLeft, setSpotsLeft] = useState(storage.getSpotsLeft());
+  
+  // ✅ NOVO: Estados do loading
+  const [loadingProgress, setLoadingProgress] = useState(0);
+  const [loadingStep, setLoadingStep] = useState(0);
+  
   const quizData = storage.getQuizData();
   const videoContainerRef = useRef<HTMLDivElement>(null);
   const offerSectionRef = useRef<HTMLDivElement>(null);
 
+  // ✅ NOVO: Etapas do loading
+  const loadingSteps = [
+    { icon: '📊', text: 'Respuestas procesadas', duration: 0 },
+    { icon: '🔍', text: 'Identificando patrones...', duration: 2000 },
+    { icon: '🧠', text: 'Generando diagnóstico...', duration: 4000 },
+    { icon: '📋', text: 'Preparando plan personalizado...', duration: 6000 }
+  ];
+
   useEffect(() => {
     tracking.pageView('resultado');
+
+    // ✅ NOVO: Animação do progress bar
+    const progressInterval = setInterval(() => {
+      setLoadingProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(progressInterval);
+          return 100;
+        }
+        return prev + 2;
+      });
+    }, 100);
+
+    // ✅ NOVO: Atualização das etapas
+    loadingSteps.forEach((step, index) => {
+      setTimeout(() => {
+        setLoadingStep(index);
+      }, step.duration);
+    });
 
     const timer1 = setTimeout(() => {
       setRevelation1(true);
@@ -33,7 +64,6 @@ export default function Result({ onNavigate }: ResultProps) {
       tracking.revelationViewed('72h_window');
     }, 6000);
 
-    // ✅ NOVO: Mostra botão da oferta após VSL
     const timer3 = setTimeout(() => {
       setShowOfferButton(true);
       tracking.revelationViewed('vsl');
@@ -62,6 +92,7 @@ export default function Result({ onNavigate }: ResultProps) {
     }, 45000);
 
     return () => {
+      clearInterval(progressInterval);
       clearTimeout(timer1);
       clearTimeout(timer2);
       clearTimeout(timer3);
@@ -70,7 +101,6 @@ export default function Result({ onNavigate }: ResultProps) {
     };
   }, []);
 
-  // ✅ Integração do vídeo VTurb
   useEffect(() => {
     if (!revelation2 || !videoContainerRef.current) return;
 
@@ -129,14 +159,12 @@ export default function Result({ onNavigate }: ResultProps) {
     window.open(getHotmartUrl(), '_blank');
   };
 
-  // ✅ NOVA FUNÇÃO: Revelar oferta com scroll suave
   const handleRevealOffer = () => {
     playKeySound();
     setRevelation3(true);
     tracking.revelationViewed('offer');
     tracking.ctaClicked('reveal_offer_button');
     
-    // Scroll suave até a oferta após 300ms (tempo da animação)
     setTimeout(() => {
       if (offerSectionRef.current) {
         offerSectionRef.current.scrollIntoView({ 
@@ -146,7 +174,6 @@ export default function Result({ onNavigate }: ResultProps) {
       }
     }, 300);
 
-    // Mostra sticky CTA após 3 segundos
     setTimeout(() => {
       setRevelation4(true);
     }, 3000);
@@ -170,6 +197,158 @@ export default function Result({ onNavigate }: ResultProps) {
       </div>
 
       <div className="revelations-container">
+        
+        {/* ========================================
+            LOADING INICIAL - Progress Bar com Etapas
+            ======================================== */}
+        {!revelation1 && (
+          <div className="revelation fade-in" style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            minHeight: '60vh',
+            padding: 'clamp(20px, 5vw, 40px)'
+          }}>
+            <div style={{
+              background: 'linear-gradient(135deg, rgba(234, 179, 8, 0.15) 0%, rgba(202, 138, 4, 0.05) 100%)',
+              border: '2px solid rgb(234, 179, 8)',
+              borderRadius: '16px',
+              padding: 'clamp(32px, 7vw, 48px) clamp(24px, 6vw, 40px)',
+              maxWidth: '600px',
+              width: '100%',
+              boxShadow: '0 12px 48px rgba(234, 179, 8, 0.3)'
+            }}>
+              
+              {/* Título */}
+              <div style={{ textAlign: 'center', marginBottom: 'clamp(24px, 6vw, 32px)' }}>
+                <div style={{
+                  fontSize: 'clamp(3rem, 10vw, 4rem)',
+                  marginBottom: 'clamp(12px, 3vw, 16px)',
+                  animation: 'spin 2s linear infinite'
+                }}>
+                  🧠
+                </div>
+                <h2 style={{
+                  fontSize: 'clamp(1.5rem, 6vw, 2rem)',
+                  fontWeight: '900',
+                  color: 'white',
+                  marginBottom: 'clamp(8px, 2vw, 12px)',
+                  lineHeight: '1.3'
+                }}>
+                  ANALIZANDO TU CASO
+                </h2>
+                <p style={{
+                  fontSize: 'clamp(0.9rem, 3.5vw, 1.125rem)',
+                  color: 'rgb(253, 224, 71)',
+                  fontWeight: '600'
+                }}>
+                  Generando tu plan personalizado...
+                </p>
+              </div>
+
+              {/* Etapas */}
+              <div style={{
+                marginBottom: 'clamp(24px, 6vw, 32px)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 'clamp(12px, 3vw, 16px)'
+              }}>
+                {loadingSteps.map((step, index) => (
+                  <div
+                    key={index}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 'clamp(12px, 3vw, 16px)',
+                      padding: 'clamp(12px, 3vw, 16px)',
+                      background: index <= loadingStep 
+                        ? 'rgba(234, 179, 8, 0.2)' 
+                        : 'rgba(0, 0, 0, 0.3)',
+                      borderRadius: '8px',
+                      border: index === loadingStep 
+                        ? '2px solid rgb(234, 179, 8)' 
+                        : '2px solid transparent',
+                      transition: 'all 0.3s ease'
+                    }}
+                  >
+                    <div style={{
+                      fontSize: 'clamp(1.5rem, 5vw, 2rem)',
+                      minWidth: 'clamp(32px, 8vw, 40px)',
+                      textAlign: 'center'
+                    }}>
+                      {index < loadingStep ? '✅' : index === loadingStep ? step.icon : '⏳'}
+                    </div>
+                    <div style={{
+                      flex: 1,
+                      fontSize: 'clamp(0.875rem, 3.5vw, 1.125rem)',
+                      color: index <= loadingStep ? 'white' : 'rgba(255, 255, 255, 0.5)',
+                      fontWeight: index === loadingStep ? 'bold' : 'normal',
+                      lineHeight: '1.4'
+                    }}>
+                      {step.text}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Progress Bar */}
+              <div style={{
+                marginBottom: 'clamp(16px, 4vw, 20px)'
+              }}>
+                <div style={{
+                  width: '100%',
+                  height: 'clamp(12px, 3vw, 16px)',
+                  background: 'rgba(0, 0, 0, 0.4)',
+                  borderRadius: '9999px',
+                  overflow: 'hidden',
+                  border: '2px solid rgba(234, 179, 8, 0.3)'
+                }}>
+                  <div style={{
+                    width: `${loadingProgress}%`,
+                    height: '100%',
+                    background: 'linear-gradient(90deg, rgb(234, 179, 8) 0%, rgb(250, 204, 21) 100%)',
+                    transition: 'width 0.3s ease',
+                    boxShadow: '0 0 10px rgba(234, 179, 8, 0.5)'
+                  }}></div>
+                </div>
+              </div>
+
+              {/* Porcentagem e Tempo */}
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                fontSize: 'clamp(0.875rem, 3.5vw, 1rem)',
+                color: 'rgb(253, 224, 71)',
+                fontWeight: 'bold'
+              }}>
+                <span>{loadingProgress}%</span>
+                <span>⏱️ {Math.ceil((100 - loadingProgress) / 10)} segundos...</span>
+              </div>
+
+              {/* Mensagem de Tranquilização */}
+              <div style={{
+                marginTop: 'clamp(24px, 6vw, 32px)',
+                padding: 'clamp(16px, 4vw, 20px)',
+                background: 'rgba(74, 222, 128, 0.1)',
+                border: '1px solid rgba(74, 222, 128, 0.3)',
+                borderRadius: '8px',
+                textAlign: 'center'
+              }}>
+                <p style={{
+                  fontSize: 'clamp(0.875rem, 3.5vw, 1rem)',
+                  color: 'rgb(74, 222, 128)',
+                  margin: 0,
+                  lineHeight: '1.5'
+                }}>
+                  ✨ No cierres ni actualices esta página
+                </p>
+              </div>
+
+            </div>
+          </div>
+        )}
+
         {/* ========================================
             REVELACIÓN 1: VENTANA 72H
             ======================================== */}
@@ -402,7 +581,7 @@ export default function Result({ onNavigate }: ResultProps) {
         )}
 
         {/* ========================================
-            BOTÃO REVELAR OFERTA (NOVO)
+            BOTÃO REVELAR OFERTA
             ======================================== */}
         {showOfferButton && !revelation3 && (
           <div className="revelation fade-in" style={{
@@ -492,7 +671,7 @@ export default function Result({ onNavigate }: ResultProps) {
         )}
 
         {/* ========================================
-            REVELACIÓN 3: OFERTA (Só aparece após clicar)
+            REVELACIÓN 3: OFERTA
             ======================================== */}
         {revelation3 && (
           <div 
@@ -539,146 +718,36 @@ export default function Result({ onNavigate }: ResultProps) {
               gap: 'clamp(12px, 3vw, 16px)',
               marginBottom: 'clamp(24px, 5vw, 32px)'
             }}>
-              <div className="feature" style={{
-                display: 'flex',
-                alignItems: 'flex-start',
-                gap: 'clamp(10px, 3vw, 12px)',
-                padding: 'clamp(8px, 2vw, 12px) 0'
-              }}>
-                <svg className="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" style={{
-                  minWidth: 'clamp(20px, 5vw, 24px)',
-                  width: 'clamp(20px, 5vw, 24px)',
-                  height: 'clamp(20px, 5vw, 24px)',
-                  marginTop: '2px'
+              {[
+                '📱 MÓDULO 1: Conversaciones (Días 1-7)',
+                '👥 MÓDULO 2: Encuentros (Días 8-14)',
+                '❤️ MÓDULO 3: Reconquista (Días 15-21)',
+                '🚨 MÓDULO 4: Protocolo de Emergencia',
+                'Guía especial: Ventana de 72 Horas',
+                'Bonos de acción inmediata',
+                'Garantía de 30 días'
+              ].map((feature, index) => (
+                <div key={index} className="feature" style={{
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: 'clamp(10px, 3vw, 12px)',
+                  padding: 'clamp(8px, 2vw, 12px) 0'
                 }}>
-                  <polyline points="20 6 9 17 4 12"></polyline>
-                </svg>
-                <span style={{
-                  fontSize: 'clamp(0.9rem, 3.5vw, 1.125rem)',
-                  lineHeight: '1.5',
-                  flex: 1
-                }}>📱 MÓDULO 1: Conversaciones (Días 1-7)</span>
-              </div>
-              <div className="feature" style={{
-                display: 'flex',
-                alignItems: 'flex-start',
-                gap: 'clamp(10px, 3vw, 12px)',
-                padding: 'clamp(8px, 2vw, 12px) 0'
-              }}>
-                <svg className="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" style={{
-                  minWidth: 'clamp(20px, 5vw, 24px)',
-                  width: 'clamp(20px, 5vw, 24px)',
-                  height: 'clamp(20px, 5vw, 24px)',
-                  marginTop: '2px'
-                }}>
-                  <polyline points="20 6 9 17 4 12"></polyline>
-                </svg>
-                <span style={{
-                  fontSize: 'clamp(0.9rem, 3.5vw, 1.125rem)',
-                  lineHeight: '1.5',
-                  flex: 1
-                }}>👥 MÓDULO 2: Encuentros (Días 8-14)</span>
-              </div>
-              <div className="feature" style={{
-                display: 'flex',
-                alignItems: 'flex-start',
-                gap: 'clamp(10px, 3vw, 12px)',
-                padding: 'clamp(8px, 2vw, 12px) 0'
-              }}>
-                <svg className="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" style={{
-                  minWidth: 'clamp(20px, 5vw, 24px)',
-                  width: 'clamp(20px, 5vw, 24px)',
-                  height: 'clamp(20px, 5vw, 24px)',
-                  marginTop: '2px'
-                }}>
-                  <polyline points="20 6 9 17 4 12"></polyline>
-                </svg>
-                <span style={{
-                  fontSize: 'clamp(0.9rem, 3.5vw, 1.125rem)',
-                  lineHeight: '1.5',
-                  flex: 1
-                }}>❤️ MÓDULO 3: Reconquista (Días 15-21)</span>
-              </div>
-              <div className="feature" style={{
-                display: 'flex',
-                alignItems: 'flex-start',
-                gap: 'clamp(10px, 3vw, 12px)',
-                padding: 'clamp(8px, 2vw, 12px) 0'
-              }}>
-                <svg className="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" style={{
-                  minWidth: 'clamp(20px, 5vw, 24px)',
-                  width: 'clamp(20px, 5vw, 24px)',
-                  height: 'clamp(20px, 5vw, 24px)',
-                  marginTop: '2px'
-                }}>
-                  <polyline points="20 6 9 17 4 12"></polyline>
-                </svg>
-                <span style={{
-                  fontSize: 'clamp(0.9rem, 3.5vw, 1.125rem)',
-                  lineHeight: '1.5',
-                  flex: 1
-                }}>🚨 MÓDULO 4: Protocolo de Emergencia</span>
-              </div>
-              <div className="feature" style={{
-                display: 'flex',
-                alignItems: 'flex-start',
-                gap: 'clamp(10px, 3vw, 12px)',
-                padding: 'clamp(8px, 2vw, 12px) 0'
-              }}>
-                <svg className="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" style={{
-                  minWidth: 'clamp(20px, 5vw, 24px)',
-                  width: 'clamp(20px, 5vw, 24px)',
-                  height: 'clamp(20px, 5vw, 24px)',
-                  marginTop: '2px'
-                }}>
-                  <polyline points="20 6 9 17 4 12"></polyline>
-                </svg>
-                <span style={{
-                  fontSize: 'clamp(0.9rem, 3.5vw, 1.125rem)',
-                  lineHeight: '1.5',
-                  flex: 1
-                }}>Guía especial: Ventana de 72 Horas</span>
-              </div>
-              <div className="feature" style={{
-                display: 'flex',
-                alignItems: 'flex-start',
-                gap: 'clamp(10px, 3vw, 12px)',
-                padding: 'clamp(8px, 2vw, 12px) 0'
-              }}>
-                <svg className="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" style={{
-                  minWidth: 'clamp(20px, 5vw, 24px)',
-                  width: 'clamp(20px, 5vw, 24px)',
-                  height: 'clamp(20px, 5vw, 24px)',
-                  marginTop: '2px'
-                }}>
-                  <polyline points="20 6 9 17 4 12"></polyline>
-                </svg>
-                <span style={{
-                  fontSize: 'clamp(0.9rem, 3.5vw, 1.125rem)',
-                  lineHeight: '1.5',
-                  flex: 1
-                }}>Bonos de acción inmediata</span>
-              </div>
-              <div className="feature" style={{
-                display: 'flex',
-                alignItems: 'flex-start',
-                gap: 'clamp(10px, 3vw, 12px)',
-                padding: 'clamp(8px, 2vw, 12px) 0'
-              }}>
-                <svg className="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" style={{
-                  minWidth: 'clamp(20px, 5vw, 24px)',
-                  width: 'clamp(20px, 5vw, 24px)',
-                  height: 'clamp(20px, 5vw, 24px)',
-                  marginTop: '2px'
-                }}>
-                  <polyline points="20 6 9 17 4 12"></polyline>
-                </svg>
-                <span style={{
-                  fontSize: 'clamp(0.9rem, 3.5vw, 1.125rem)',
-                  lineHeight: '1.5',
-                  flex: 1
-                }}>Garantía de 30 días</span>
-              </div>
+                  <svg className="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" style={{
+                    minWidth: 'clamp(20px, 5vw, 24px)',
+                    width: 'clamp(20px, 5vw, 24px)',
+                    height: 'clamp(20px, 5vw, 24px)',
+                    marginTop: '2px'
+                  }}>
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  <span style={{
+                    fontSize: 'clamp(0.9rem, 3.5vw, 1.125rem)',
+                    lineHeight: '1.5',
+                    flex: 1
+                  }}>{feature}</span>
+                </div>
+              ))}
             </div>
 
             <div className="urgency-indicators" style={{
@@ -820,6 +889,15 @@ export default function Result({ onNavigate }: ResultProps) {
 
       {/* ✅ ANIMAÇÕES CSS */}
       <style jsx>{`
+        @keyframes spin {
+          from {
+            transform: rotate(0deg);
+          }
+          to {
+            transform: rotate(360deg);
+          }
+        }
+
         @keyframes pulse {
           0%, 100% {
             box-shadow: 0 12px 48px rgba(234, 179, 8, 0.4);
