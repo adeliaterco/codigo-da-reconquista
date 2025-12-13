@@ -51,6 +51,8 @@ export default function Landing({ onNavigate }: LandingProps) {
       <div className="scanlines"></div>
 
       <div className="content-wrapper">
+        <header className="landing-header">
+        </header>
 
         <main className="landing-main">
           <h1 className="headline">
