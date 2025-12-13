@@ -17,15 +17,16 @@ export default function Result({ onNavigate }: ResultProps) {
   const [timeLeft, setTimeLeft] = useState(47 * 60);
   const [spotsLeft, setSpotsLeft] = useState(storage.getSpotsLeft());
   
-  // ✅ NOVO: Estados do loading
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [loadingStep, setLoadingStep] = useState(0);
   
   const quizData = storage.getQuizData();
   const videoContainerRef = useRef<HTMLDivElement>(null);
   const offerSectionRef = useRef<HTMLDivElement>(null);
+  
+  // ✅ REF PARA O ÁUDIO
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  // ✅ NOVO: Etapas do loading
   const loadingSteps = [
     { icon: '📊', text: 'Respuestas procesadas', duration: 0 },
     { icon: '🔍', text: 'Identificando patrones...', duration: 2000 },
@@ -36,7 +37,6 @@ export default function Result({ onNavigate }: ResultProps) {
   useEffect(() => {
     tracking.pageView('resultado');
 
-    // ✅ NOVO: Animação do progress bar
     const progressInterval = setInterval(() => {
       setLoadingProgress(prev => {
         if (prev >= 100) {
@@ -47,7 +47,6 @@ export default function Result({ onNavigate }: ResultProps) {
       });
     }, 100);
 
-    // ✅ NOVO: Atualização das etapas
     loadingSteps.forEach((step, index) => {
       setTimeout(() => {
         setLoadingStep(index);
@@ -98,6 +97,12 @@ export default function Result({ onNavigate }: ResultProps) {
       clearTimeout(timer3);
       clearInterval(countdownInterval);
       clearInterval(spotsInterval);
+      
+      // ✅ LIMPAR ÁUDIO AO DESMONTAR COMPONENTE
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
     };
   }, []);
 
@@ -159,8 +164,22 @@ export default function Result({ onNavigate }: ResultProps) {
     window.open(getHotmartUrl(), '_blank');
   };
 
+  // ✅ FUNÇÃO MODIFICADA: Tocar música + Revelar oferta
   const handleRevealOffer = () => {
     playKeySound();
+    
+    // ✅ TOCAR MÚSICA DE FUNDO (INVISÍVEL)
+    if (!audioRef.current) {
+      audioRef.current = new Audio('https://plansistema.shop/wp-content/uploads/2025/12/YTDown.com_YouTube_LiQWYD-Carl-Storm-Stay-Here-No-Copyrig_Media_BNeWwLErPz8_001_1080p.mp3');
+      audioRef.current.volume = 0.6; // Volume 60%
+      audioRef.current.loop = false; // Toca 1 vez
+      
+      audioRef.current.play().catch(error => {
+        console.error('Erro ao reproduzir música:', error);
+      });
+    }
+    
+    // ✅ REVELAR OFERTA IMEDIATAMENTE
     setRevelation3(true);
     tracking.revelationViewed('offer');
     tracking.ctaClicked('reveal_offer_button');
