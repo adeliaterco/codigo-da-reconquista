@@ -21,6 +21,10 @@ interface Question {
   text: string;
   options: string[];
   response: string;
+  responseByGender?: {
+    HOMBRE: string;
+    MUJER: string;
+  };
   dataKey: 'gender' | 'timeSeparation' | 'whoEnded' | 'relationshipDuration' | 'currentSituation' | 'exSituation' | 'commitmentLevel';
 }
 
@@ -29,49 +33,77 @@ const QUESTIONS: Question[] = [
     id: 1,
     text: 'Para calibrar el análisis, necesito saber: ¿cuál es tu género?',
     options: ['HOMBRE', 'MUJER'],
-    response: 'Entendido. Cada situación tiene patrones específicos que necesitamos identificar. Eso es exactamente lo que vamos a explorar en tu caso.',
+    response: 'Entendido.',
+    responseByGender: {
+      HOMBRE: 'Perfecto. Voy a calibrar el análisis basado en los patrones específicos de comportamiento femenino después de una ruptura. Cada respuesta que des me ayudará a entender exactamente qué está pasando con ella.',
+      MUJER: 'Perfecto. Voy a calibrar el análisis basado en los patrones específicos de comportamiento masculino después de una ruptura. Cada respuesta que des me ayudará a entender exactamente qué está pasando con él.'
+    },
     dataKey: 'gender',
   },
   {
     id: 2,
     text: 'Entendido. Ahora, ¿cuánto tiempo ha pasado desde que se separaron?',
     options: ['MENOS DE 1 SEMANA', '1-4 SEMANAS', '1-6 MESES', 'MÁS DE 6 MESES'],
-    response: 'Registrado. Eso es crucial. Cuando la separación es reciente, hay una ventana donde tu ex aún piensa en ti constantemente. Después, los patrones cerebrales cambian. Vamos a aprovechar eso.',
+    response: 'Registrado.',
+    responseByGender: {
+      HOMBRE: 'Registrado. El tiempo es crucial. En este período, el cerebro de ella pasa por fases químicas específicas. Cuanto más reciente la separación, más activa está la memoria emocional. Vamos a usar eso estratégicamente.',
+      MUJER: 'Registrado. El tiempo es crucial. En este período, el cerebro de él pasa por fases químicas específicas. Cuanto más reciente la separación, más activa está la memoria emocional. Vamos a usar eso estratégicamente.'
+    },
     dataKey: 'timeSeparation',
   },
   {
     id: 3,
     text: 'Bien. ¿Y cómo fue la separación? ¿Quién tomó la iniciativa?',
     options: ['ÉL/ELLA TERMINÓ', 'YO TERMINÉ', 'DECISIÓN MUTUA'],
-    response: 'Correcto. Aquí está lo importante: cuando la otra persona termina, significa que algo específico la hizo sentir que no eras suficiente. Pero aquí está la verdad: eso puede cambiar. Vamos a descubrir exactamente qué fue y cómo revertirlo.',
+    response: 'Correcto.',
+    responseByGender: {
+      HOMBRE: 'Entiendo. Cuando ella toma la decisión de terminar, significa que algo activó un "switch" emocional en su cerebro. La buena noticia: ese switch puede revertirse si sabes exactamente qué botones presionar. Y eso es lo que vamos a descubrir.',
+      MUJER: 'Entiendo. Cuando él toma la decisión de terminar, significa que algo activó un "switch" emocional en su cerebro. La buena noticia: ese switch puede revertirse si sabes exactamente qué botones presionar. Y eso es lo que vamos a descubrir.'
+    },
     dataKey: 'whoEnded',
   },
   {
     id: 4,
     text: 'Registrado. ¿Por cuánto tiempo estuvieron juntos?',
     options: ['MENOS DE 6 MESES', '6 MESES-1 AÑO', '1-3 AÑOS', 'MÁS DE 3 AÑOS'],
-    response: 'Ok. Entiendo. El tiempo que estuvieron juntos define el nivel de conexión emocional. Cuanto más tiempo, más profunda la huella emocional. Y eso es exactamente lo que vamos a usar a tu favor.',
+    response: 'Ok.',
+    responseByGender: {
+      HOMBRE: 'Perfecto. El tiempo de relación define cuántas "anclas emocionales" creaste en su memoria. Cuanto más tiempo juntos, más profundas las conexiones neuronales. Eso trabaja a tu favor si usas el protocolo correcto.',
+      MUJER: 'Perfecto. El tiempo de relación define cuántas "anclas emocionales" creaste en su memoria. Cuanto más tiempo juntos, más profundas las conexiones neuronales. Eso trabaja a tu favor si usas el protocolo correcto.'
+    },
     dataKey: 'relationshipDuration',
   },
   {
     id: 5,
     text: '¿Cuál es tu situación actual con tu ex-pareja?',
     options: ['CONTACTO CERO', 'ME IGNORA', 'BLOQUEADO', 'SÓLO TEMAS NECESARIOS', 'HABLAMOS A VECES', 'SOMOS AMIGOS', 'ENCUENTROS ÍNTIMOS'],
-    response: 'Analizando... Eso es información crucial. Tu situación actual define exactamente qué protocolo usar. No es lo mismo si hay contacto cero que si aún hay comunicación. Vamos a descubrir el paso a paso específico para tu caso.',
+    response: 'Analizando...',
+    responseByGender: {
+      HOMBRE: 'Información clave. El nivel de contacto actual revela exactamente en qué fase emocional está ella. Cada escenario requiere un protocolo diferente. Si hay contacto cero, usamos una estrategia. Si hay comunicación, usamos otra completamente distinta.',
+      MUJER: 'Información clave. El nivel de contacto actual revela exactamente en qué fase emocional está él. Cada escenario requiere un protocolo diferente. Si hay contacto cero, usamos una estrategia. Si hay comunicación, usamos otra completamente distinta.'
+    },
     dataKey: 'currentSituation',
   },
   {
     id: 6,
     text: 'Analizando... Ahora, una información crucial: ¿tu ex-pareja ya está con otra persona?',
     options: ['ESTÁ SOLTERO/A', 'NO ESTOY SEGURO/A', 'SALIENDO CASUAL', 'RELACIÓN SERIA', 'VARIAS PERSONAS'],
-    response: 'Crucial. Entiendo. Eso cambia la estrategia, pero no imposibilita nada. Incluso si tu ex está con alguien, hay patrones psicológicos que funcionan. Vamos a descubrir cuáles aplican a tu situación.',
+    response: 'Crucial.',
+    responseByGender: {
+      HOMBRE: 'Entendido. Esto cambia el mapa, pero no el destino. Incluso si ella está con alguien, hay protocolos psicológicos específicos que funcionan. De hecho, en algunos casos, esto puede ser usado estratégicamente a tu favor.',
+      MUJER: 'Entendido. Esto cambia el mapa, pero no el destino. Incluso si él está con alguien, hay protocolos psicológicos específicos que funcionan. De hecho, en algunos casos, esto puede ser usado estratégicamente a tu favor.'
+    },
     dataKey: 'exSituation',
   },
   {
     id: 7,
     text: 'Última pregunta para finalizar el análisis: en una escala de 1 a 4, ¿cuánto quieres recuperar esta relación?',
     options: ['1 - NO ESTOY SEGURO/A', '2 - LO ESTOY CONSIDERANDO', '3 - LO QUIERO MUCHO', '4 - LO QUIERO CON TODA MI ALMA'],
-    response: '¡Análisis completo! Perfecto. Tu nivel de compromiso define la intensidad del plan. Cuanto más quieras, más profundo será el protocolo. Y eso es exactamente lo que necesitas para la reconquista.',
+    response: '¡Análisis completo!',
+    responseByGender: {
+      HOMBRE: '¡Análisis completo! Tu nivel de compromiso define la intensidad del protocolo. Cuanto más comprometido estés, más poderosas serán las técnicas que voy a revelarte. Ahora tengo todo lo que necesito para mostrarte el camino exacto para reconquistar a ella.',
+      MUJER: '¡Análisis completo! Tu nivel de compromiso define la intensidad del protocolo. Cuanto más comprometido estés, más poderosas serán las técnicas que voy a revelarte. Ahora tengo todo lo que necesito para mostrarte el camino exacto para reconquistar a él.'
+    },
     dataKey: 'commitmentLevel',
   },
 ];
@@ -165,7 +197,12 @@ export default function Chat({ onNavigate }: ChatProps) {
     setTimeout(() => {
       setIsProcessing(false);
 
-      const responseText = question.response;
+      let responseText = question.response;
+      
+      if (question.responseByGender && quizData.gender) {
+        const gender = quizData.gender as 'HOMBRE' | 'MUJER';
+        responseText = question.responseByGender[gender] || question.response;
+      }
 
       const responseMessage: Message = {
         type: 'bot',
