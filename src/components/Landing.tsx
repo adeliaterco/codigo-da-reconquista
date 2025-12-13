@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { tracking } from '../utils/tracking';
 import { storage } from '../utils/storage';
-import { ga4Tracking } from '../utils/ga4Tracking'; // ✅ NOVO IMPORT
+import { ga4Tracking } from '../utils/ga4Tracking';
 
 interface LandingProps {
   onNavigate: (page: string) => void;
@@ -10,9 +10,46 @@ interface LandingProps {
 export default function Landing({ onNavigate }: LandingProps) {
   const [userCount, setUserCount] = useState(storage.getUserCount());
 
+  // ========================================
+  // ✅ SISTEMA DE CAPTURA DE UTMs
+  // ========================================
+  const captureUTMs = () => {
+    try {
+      const urlParams = new URLSearchParams(window.location.search);
+      const utms: Record<string, string> = {};
+
+      // Captura UTMs padrão
+      const utmParams = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'];
+      utmParams.forEach(param => {
+        const value = urlParams.get(param);
+        if (value) utms[param] = value;
+      });
+
+      // Captura Click IDs
+      const clickIds = ['fbclid', 'gclid', 'ttclid'];
+      clickIds.forEach(param => {
+        const value = urlParams.get(param);
+        if (value) utms[param] = value;
+      });
+
+      // Armazena no localStorage
+      if (Object.keys(utms).length > 0) {
+        localStorage.setItem('quiz_utms', JSON.stringify(utms));
+        console.log('✅ UTMs capturadas:', utms);
+      } else {
+        console.log('ℹ️ Nenhuma UTM encontrada na URL');
+      }
+    } catch (error) {
+      console.error('❌ Erro ao capturar UTMs:', error);
+    }
+  };
+
   useEffect(() => {
+    // ✅ CAPTURA UTMs ASSIM QUE A PÁGINA CARREGA
+    captureUTMs();
+
     tracking.pageView('landing');
-    ga4Tracking.landingPageView(); // ✅ NOVO: GA4 page view
+    ga4Tracking.landingPageView();
 
     const interval = setInterval(() => {
       setUserCount(prev => {
@@ -27,7 +64,7 @@ export default function Landing({ onNavigate }: LandingProps) {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
             tracking.scrollDepth(50);
-            ga4Tracking.landingScrollDepth(50); // ✅ NOVO: GA4 scroll depth
+            ga4Tracking.landingScrollDepth(50);
           }
         });
       },
@@ -45,7 +82,7 @@ export default function Landing({ onNavigate }: LandingProps) {
 
   const handleCTAClick = () => {
     tracking.ctaClicked('landing_primary');
-    ga4Tracking.landingCTAClick(); // ✅ NOVO: GA4 CTA click
+    ga4Tracking.landingCTAClick();
     onNavigate('chat');
   };
 

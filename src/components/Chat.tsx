@@ -105,20 +105,20 @@ const QUESTIONS: Question[] = [
     },
     dataKey: 'exSituation',
   },
-{
-  id: 7,
-  text: 'Última pregunta para finalizar el análisis: en una escala de 1 a 4, ¿cuánto quieres recuperar esta relación?',
-  optionsByGender: {
-    HOMBRE: ['1 - NO ESTOY SEGURO', '2 - LO ESTOY CONSIDERANDO', '3 - LO QUIERO MUCHO', '4 - LO QUIERO CON TODA MI ALMA'],
-    MUJER: ['1 - NO ESTOY SEGURA', '2 - LO ESTOY CONSIDERANDO', '3 - LO QUIERO MUCHO', '4 - LO QUIERO CON TODA MI ALMA']
-  },
-  response: '¡Análisis completo!',
-  responseByGender: {
-    HOMBRE: '¡Análisis completo! Tu nivel de compromiso define la intensidad del protocolo. Cuanto más comprometido estés, más poderosas serán las técnicas que voy a revelarte. Ahora tengo todo lo que necesito para mostrarte el camino exacto para reconquistar a ella.',
-    MUJER: '¡Análisis completo! Tu nivel de compromiso define la intensidad del protocolo. Cuanto más comprometida estés, más poderosas serán las técnicas que voy a revelarte. Ahora tengo todo lo que necesito para mostrarte el camino exacto para reconquistar a él.'
-  },
-  dataKey: 'commitmentLevel',
-}
+  {
+    id: 7,
+    text: 'Última pregunta para finalizar el análisis: en una escala de 1 a 4, ¿cuánto quieres recuperar esta relación?',
+    optionsByGender: {
+      HOMBRE: ['1 - NO ESTOY SEGURO', '2 - LO ESTOY CONSIDERANDO', '3 - LO QUIERO MUCHO', '4 - LO QUIERO CON TODA MI ALMA'],
+      MUJER: ['1 - NO ESTOY SEGURA', '2 - LO ESTOY CONSIDERANDO', '3 - LO QUIERO MUCHO', '4 - LO QUIERO CON TODA MI ALMA']
+    },
+    response: '¡Análisis completo!',
+    responseByGender: {
+      HOMBRE: '¡Análisis completo! Tu nivel de compromiso define la intensidad del protocolo. Cuanto más comprometido estés, más poderosas serán las técnicas que voy a revelarte. Ahora tengo todo lo que necesito para mostrarte el camino exacto para reconquistar a ella.',
+      MUJER: '¡Análisis completo! Tu nivel de compromiso define la intensidad del protocolo. Cuanto más comprometida estés, más poderosas serán las técnicas que voy a revelarte. Ahora tengo todo lo que necesito para mostrarte el camino exacto para reconquistar a él.'
+    },
+    dataKey: 'commitmentLevel',
+  }
 ];
 
 export default function Chat({ onNavigate }: ChatProps) {
@@ -130,7 +130,36 @@ export default function Chat({ onNavigate }: ChatProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const typewriterTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  // ========================================
+  // ✅ SISTEMA DE PRESERVAÇÃO DE UTMs
+  // ========================================
+  const ensureUTMs = () => {
+    try {
+      const storedUTMs = localStorage.getItem('quiz_utms');
+      if (storedUTMs) {
+        const utms = JSON.parse(storedUTMs);
+        console.log('✅ UTMs preservadas no Chat:', utms);
+        
+        // Sincroniza com Utmify se disponível
+        if (window.location.search === '' && Object.keys(utms).length > 0) {
+          const utmString = Object.entries(utms)
+            .map(([key, value]) => `${key}=${encodeURIComponent(value as string)}`)
+            .join('&');
+          window.history.replaceState({}, '', `${window.location.pathname}?${utmString}`);
+          console.log('✅ UTMs anexadas à URL do Chat');
+        }
+      } else {
+        console.log('ℹ️ Nenhuma UTM armazenada encontrada');
+      }
+    } catch (error) {
+      console.error('❌ Erro ao preservar UTMs:', error);
+    }
+  };
+
   useEffect(() => {
+    // ✅ GARANTE QUE AS UTMs ESTEJAM PRESERVADAS
+    ensureUTMs();
+
     tracking.pageView('chat');
     tracking.chatStarted();
     
@@ -261,7 +290,6 @@ export default function Chat({ onNavigate }: ChatProps) {
     onNavigate('resultado');
   };
 
-  // ✅ FUNÇÃO PARA PEGAR AS OPÇÕES CORRETAS
   const getQuestionOptions = (question: Question): string[] => {
     const quizData = storage.getQuizData();
     

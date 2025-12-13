@@ -3,9 +3,8 @@ import { tracking } from '../utils/tracking';
 import { storage } from '../utils/storage';
 import { playKeySound, getHotmartUrl } from '../utils/animations';
 import { QuizAnswer } from '../types/quiz';
-import { ga4Tracking } from '../utils/ga4Tracking'; // ✅ IMPORT GA4
+import { ga4Tracking } from '../utils/ga4Tracking';
 
-// ✅ NOVOS IMPORTS
 import { 
   getTitle, 
   getLoadingMessage, 
@@ -38,19 +37,82 @@ export default function Result({ onNavigate }: ResultProps) {
   const videoContainerRef = useRef<HTMLDivElement>(null);
   const offerSectionRef = useRef<HTMLDivElement>(null);
 
-  // ✅ VARIÁVEL PARA FACILITAR O USO
   const gender = quizData.gender || 'HOMBRE';
 
   const loadingSteps = [
     { icon: '📊', text: 'Respuestas procesadas', duration: 0 },
     { icon: '🔍', text: 'Identificando patrones...', duration: 2000 },
     { icon: '🧠', text: 'Generando diagnóstico...', duration: 4000 },
-    { icon: '📋', text: getLoadingMessage(gender), duration: 6000 } // ✅ PERSONALIZADO
+    { icon: '📋', text: getLoadingMessage(gender), duration: 6000 }
   ];
 
+  // ========================================
+  // ✅ SISTEMA DE PRESERVAÇÃO E ANEXAÇÃO DE UTMs
+  // ========================================
+  
+  const getUTMs = (): Record<string, string> => {
+    try {
+      const storedUTMs = localStorage.getItem('quiz_utms');
+      if (storedUTMs) {
+        return JSON.parse(storedUTMs);
+      }
+    } catch (error) {
+      console.error('❌ Erro ao recuperar UTMs:', error);
+    }
+    return {};
+  };
+
+  const ensureUTMs = () => {
+    try {
+      const utms = getUTMs();
+      if (Object.keys(utms).length > 0) {
+        console.log('✅ UTMs preservadas no Resultado:', utms);
+        
+        if (window.location.search === '') {
+          const utmString = Object.entries(utms)
+            .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
+            .join('&');
+          window.history.replaceState({}, '', `${window.location.pathname}?${utmString}`);
+          console.log('✅ UTMs anexadas à URL do Resultado');
+        }
+      } else {
+        console.log('ℹ️ Nenhuma UTM armazenada encontrada');
+      }
+    } catch (error) {
+      console.error('❌ Erro ao preservar UTMs:', error);
+    }
+  };
+
+  const appendUTMsToHotmartURL = (): string => {
+    try {
+      const baseURL = getHotmartUrl();
+      const utms = getUTMs();
+      
+      if (Object.keys(utms).length === 0) {
+        console.log('ℹ️ Nenhuma UTM para anexar ao link do Hotmart');
+        return baseURL;
+      }
+
+      const url = new URL(baseURL);
+      Object.entries(utms).forEach(([key, value]) => {
+        url.searchParams.set(key, value);
+      });
+
+      const finalURL = url.toString();
+      console.log('🔗 URL do Hotmart com UTMs:', finalURL);
+      return finalURL;
+    } catch (error) {
+      console.error('❌ Erro ao anexar UTMs ao Hotmart:', error);
+      return getHotmartUrl();
+    }
+  };
+
   useEffect(() => {
+    // ✅ GARANTE QUE AS UTMs ESTEJAM PRESERVADAS
+    ensureUTMs();
+
     tracking.pageView('resultado');
-    ga4Tracking.resultPageView(); // ✅ GA4 TRACKING
+    ga4Tracking.resultPageView();
 
     const progressInterval = setInterval(() => {
       setLoadingProgress(prev => {
@@ -71,27 +133,27 @@ export default function Result({ onNavigate }: ResultProps) {
     const timer1 = setTimeout(() => {
       setRevelation1(true);
       tracking.revelationViewed('why_left');
-      ga4Tracking.revelationViewed('Por qué te dejó', 1); // ✅ GA4 TRACKING
+      ga4Tracking.revelationViewed('Por qué te dejó', 1);
     }, 6500);
 
     const timer2 = setTimeout(() => {
       setRevelation2(true);
       tracking.revelationViewed('72h_window');
-      ga4Tracking.revelationViewed('Ventana 72 Horas', 2); // ✅ GA4 TRACKING
+      ga4Tracking.revelationViewed('Ventana 72 Horas', 2);
     }, 12500);
 
     const timer3 = setTimeout(() => {
       setShowOfferButton(true);
       tracking.revelationViewed('vsl');
       tracking.vslEvent('started');
-      ga4Tracking.videoStarted(); // ✅ GA4 TRACKING
+      ga4Tracking.videoStarted();
     }, 15500);
 
     const countdownInterval = setInterval(() => {
       setTimeLeft(prev => {
         if (prev <= 1) {
           tracking.countdownExpired();
-          ga4Tracking.countdownExpired(); // ✅ GA4 TRACKING
+          ga4Tracking.countdownExpired();
           return 0;
         }
         return prev - 1;
@@ -103,7 +165,7 @@ export default function Result({ onNavigate }: ResultProps) {
         if (prev > 15) {
           const newSpots = prev - 1;
           storage.setSpotsLeft(newSpots);
-          ga4Tracking.spotsUpdated(newSpots); // ✅ GA4 TRACKING
+          ga4Tracking.spotsUpdated(newSpots);
           return newSpots;
         }
         return prev;
@@ -173,10 +235,13 @@ export default function Result({ onNavigate }: ResultProps) {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
+  // ✅ FUNÇÃO MODIFICADA PARA ANEXAR UTMs AO HOTMART
   const handleCTAClick = () => {
     tracking.ctaClicked('result_buy');
-    ga4Tracking.ctaBuyClicked('result_buy_main'); // ✅ GA4 TRACKING
-    window.open(getHotmartUrl(), '_blank');
+    ga4Tracking.ctaBuyClicked('result_buy_main');
+    
+    const hotmartURLWithUTMs = appendUTMsToHotmartURL();
+    window.open(hotmartURLWithUTMs, '_blank');
   };
 
   const handleRevealOffer = () => {
@@ -184,8 +249,8 @@ export default function Result({ onNavigate }: ResultProps) {
     setRevelation3(true);
     tracking.revelationViewed('offer');
     tracking.ctaClicked('reveal_offer_button');
-    ga4Tracking.revelationViewed('Oferta Revelada', 3); // ✅ GA4 TRACKING
-    ga4Tracking.offerRevealed(); // ✅ GA4 TRACKING
+    ga4Tracking.revelationViewed('Oferta Revelada', 3);
+    ga4Tracking.offerRevealed();
     
     setTimeout(() => {
       if (offerSectionRef.current) {
@@ -198,11 +263,9 @@ export default function Result({ onNavigate }: ResultProps) {
 
     setTimeout(() => {
       setRevelation4(true);
-      ga4Tracking.offerViewed(); // ✅ GA4 TRACKING
+      ga4Tracking.offerViewed();
     }, 3000);
-  };
-
-  return (
+  };  return (
     <div className="result-container">
       <div className="result-header">
         <h1 className="result-title">Tu Plan Personalizado Está Listo</h1>
@@ -214,9 +277,7 @@ export default function Result({ onNavigate }: ResultProps) {
 
       <div className="revelations-container">
         
-        {/* ========================================
-            LOADING INICIAL
-            ======================================== */}
+        {/* LOADING INICIAL */}
         {!revelation1 && (
           <div className="revelation fade-in" style={{
             display: 'flex',
@@ -360,23 +421,18 @@ export default function Result({ onNavigate }: ResultProps) {
           </div>
         )}
 
-        {/* ========================================
-            REVELACIÓN 1: POR QUÉ TE DEJÓ
-            ======================================== */}
+        {/* REVELACIÓN 1: POR QUÉ TE DEJÓ */}
         {revelation1 && (
           <div className="revelation fade-in">
             <div className="revelation-header">
               <div className="revelation-icon">💔</div>
-              {/* ✅ TÍTULO PERSONALIZADO */}
               <h2>{getTitle(gender)}</h2>
             </div>
             
-            {/* ✅ COPY PERSONALIZADO */}
             <p className="revelation-text" style={{ whiteSpace: 'pre-line', lineHeight: '1.8' }}>
               {getCopy(quizData)}
             </p>
 
-            {/* ✅ VALIDAÇÃO EMOCIONAL */}
             <div style={{
               background: 'rgba(74, 222, 128, 0.1)',
               border: '2px solid rgba(74, 222, 128, 0.3)',
@@ -447,7 +503,6 @@ export default function Result({ onNavigate }: ResultProps) {
                 }}>
                   Después de una ruptura, el cerebro de tu ex pasa por <strong style={{ color: 'rgb(250, 204, 21)' }}>3 fases químicas</strong> en 72 horas.
                   <br /><br />
-                  {/* ✅ COPY PERSONALIZADO */}
                   <span style={{ whiteSpace: 'pre-line' }}>{getVentana72Copy(gender)}</span>
                 </p>
               </div>
@@ -479,7 +534,6 @@ export default function Result({ onNavigate }: ResultProps) {
                       fontSize: 'clamp(0.9rem, 3.5vw, 1.125rem)',
                       lineHeight: '1.6'
                     }}>
-                      {/* ✅ TEXTO PERSONALIZADO DAS FASES */}
                       {getFaseText(gender, fase)}
                     </div>
                   </div>
@@ -543,9 +597,7 @@ export default function Result({ onNavigate }: ResultProps) {
           </div>
         )}
 
-        {/* ========================================
-            REVELACIÓN 2: VSL
-            ======================================== */}
+        {/* REVELACIÓN 2: VSL */}
         {revelation2 && (
           <div className="revelation fade-in vsl-revelation">
             <div className="revelation-header">
@@ -567,9 +619,7 @@ export default function Result({ onNavigate }: ResultProps) {
           </div>
         )}
 
-        {/* ========================================
-            BOTÃO REVELAR OFERTA
-            ======================================== */}
+        {/* BOTÃO REVELAR OFERTA */}
         {showOfferButton && !revelation3 && (
           <div className="revelation fade-in" style={{
             textAlign: 'center',
@@ -657,9 +707,7 @@ export default function Result({ onNavigate }: ResultProps) {
           </div>
         )}
 
-        {/* ========================================
-            REVELACIÓN 3: OFERTA
-            ======================================== */}
+        {/* REVELACIÓN 3: OFERTA */}
         {revelation3 && (
           <div 
             ref={offerSectionRef}
@@ -689,7 +737,6 @@ export default function Result({ onNavigate }: ResultProps) {
 
             <div className="revelation-header" style={{ marginTop: 0 }}>
               <div className="revelation-icon">🎯</div>
-              {/* ✅ TÍTULO DA OFERTA PERSONALIZADO */}
               <h2 style={{ 
                 fontSize: 'clamp(1.5rem, 6vw, 2rem)',
                 lineHeight: '1.3',
@@ -700,7 +747,6 @@ export default function Result({ onNavigate }: ResultProps) {
               </h2>
             </div>
 
-            {/* ✅ MOSTRAR DADOS DO QUIZ */}
             <div style={{
               background: 'rgba(234, 179, 8, 0.1)',
               border: '2px solid rgba(234, 179, 8, 0.3)',
@@ -731,7 +777,6 @@ export default function Result({ onNavigate }: ResultProps) {
               </ul>
             </div>
 
-            {/* ✅ FEATURES PERSONALIZADAS */}
             <div className="offer-features" style={{
               display: 'flex',
               flexDirection: 'column',
@@ -802,7 +847,6 @@ export default function Result({ onNavigate }: ResultProps) {
               </div>
             </div>
 
-            {/* ✅ CTA PERSONALIZADO */}
             <button 
               className="cta-buy" 
               onClick={handleCTAClick}
@@ -876,11 +920,10 @@ export default function Result({ onNavigate }: ResultProps) {
           }}>
             ⏰ {formatTime(timeLeft)} • {spotsLeft} spots restantes
           </div>
-          {/* ✅ CTA STICKY PERSONALIZADO */}
           <button 
             className="cta-buy-sticky" 
             onClick={() => {
-              ga4Tracking.ctaBuyClicked('result_buy_sticky'); // ✅ GA4 TRACKING
+              ga4Tracking.ctaBuyClicked('result_buy_sticky');
               handleCTAClick();
             }}
             style={{
