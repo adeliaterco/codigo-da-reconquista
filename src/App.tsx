@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import Landing from './components/Landing';
 import Chat from './components/Chat';
 import Result from './components/Result';
+import Layout from './components/Layout'; // ✅ NOVO IMPORT
 import { storage } from './utils/storage';
 
 type Page = 'landing' | 'chat' | 'resultado';
@@ -43,11 +44,13 @@ function App() {
   };
 
   return (
-    <div className="app">
-      {currentPage === 'landing' && <Landing onNavigate={handleNavigate} />}
-      {currentPage === 'chat' && <Chat onNavigate={handleNavigate} />}
-      {currentPage === 'resultado' && <Result onNavigate={handleNavigate} />}
-    </div>
+    <Layout> {/* ✅ ENVOLVE TUDO COM LAYOUT */}
+      <div className="app">
+        {currentPage === 'landing' && <Landing onNavigate={handleNavigate} />}
+        {currentPage === 'chat' && <Chat onNavigate={handleNavigate} />}
+        {currentPage === 'resultado' && <Result onNavigate={handleNavigate} />}
+      </div>
+    </Layout>
   );
 }
 
