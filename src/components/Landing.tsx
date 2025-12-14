@@ -101,7 +101,7 @@ export default function Landing({ onNavigate }: LandingProps) {
 
         <main className="landing-main">
           <h1 className="headline">
-            Descubre la Verdad Sobre Tu Ex: Análisis Psicológico en Tiempo Real por el Especialista Ricardo Abreu
+            Descubre la Verdad Sobre Tu Ex: Análisis Psicológico en Tiempo Real por el Especialista
           </h1>
 
           <p className="subheadline">
