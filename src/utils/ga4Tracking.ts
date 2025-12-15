@@ -163,12 +163,6 @@ class GA4Tracking {
   // COUNTDOWN & URGÊNCIA
   // ========================================
 
-  countdownExpired() {
-    this.sendEvent('countdown_expired', {
-      page: 'resultado'
-    });
-  }
-
   spotsUpdated(spotsLeft: number) {
     if (spotsLeft === 20 || spotsLeft === 10 || spotsLeft === 5) {
       this.sendEvent('spots_alert', {

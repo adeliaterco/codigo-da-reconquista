@@ -152,8 +152,6 @@ export default function Result({ onNavigate }: ResultProps) {
     const countdownInterval = setInterval(() => {
       setTimeLeft(prev => {
         if (prev <= 1) {
-          tracking.countdownExpired();
-          ga4Tracking.countdownExpired();
           return 0;
         }
         return prev - 1;
@@ -265,7 +263,9 @@ export default function Result({ onNavigate }: ResultProps) {
       setRevelation4(true);
       ga4Tracking.offerViewed();
     }, 3000);
-  };  return (
+  };
+
+  return (
     <div className="result-container">
       <div className="result-header">
         <h1 className="result-title">Tu Plan Personalizado Está Listo</h1>
