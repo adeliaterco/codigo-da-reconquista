@@ -225,17 +225,17 @@ export default function Result({ onNavigate }: ResultProps) {
         videoSectionRef.current.innerHTML = `
           <div style="position: relative; width: 100%; padding-bottom: 56.25%; background: #000; border-radius: 8px; overflow: hidden;">
             <vturb-smartplayer 
-              id="vid-6944cc019a07b812705bb522" 
+              id="vid-69453991c48d7588f4e6d9cf" 
               style="display: block; margin: 0 auto; width: 100%; height: 100%; position: absolute; top: 0; left: 0;"
             ></vturb-smartplayer>
           </div>
         `;
 
-        const existingScript = document.querySelector('script[src="https://scripts.converteai.net/ea3c2dc1-1976-40a2-b0fb-c5055f82bfaf/players/6944cc019a07b812705bb522/v4/player.js"]');
+        const existingScript = document.querySelector('script[src="https://scripts.converteai.net/ea3c2dc1-1976-40a2-b0fb-c5055f82bfaf/players/69453991c48d7588f4e6d9cf/v4/player.js"]');
         
         if (!existingScript) {
           const s = document.createElement("script");
-          s.src = "https://scripts.converteai.net/ea3c2dc1-1976-40a2-b0fb-c5055f82bfaf/players/6944cc019a07b812705bb522/v4/player.js";
+          s.src = "https://scripts.converteai.net/ea3c2dc1-1976-40a2-b0fb-c5055f82bfaf/players/69453991c48d7588f4e6d9cf/v4/player.js";
           s.async = true;
           
           s.onload = () => {
