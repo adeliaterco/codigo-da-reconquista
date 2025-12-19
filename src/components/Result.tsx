@@ -313,7 +313,7 @@ export default function Result({ onNavigate }: ResultProps) {
     window.open(hotmartURLWithUTMs, '_blank');
   };
 
-  const phases = ['Diagnóstico', 'Vídeo', 'Ventana 72h', 'Oferta'];
+  const phases = ['Diagnóstico', 'Vídeo', 'Ventana 72h', 'Solución'];
 
   return (
     <div className="result-container">
