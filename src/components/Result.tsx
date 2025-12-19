@@ -221,17 +221,17 @@ export default function Result({ onNavigate }: ResultProps) {
         videoContainerRef.current.innerHTML = `
           <div style="position: relative; width: 100%; padding-bottom: 56.25%; background: #000; border-radius: 8px; overflow: hidden;">
             <vturb-smartplayer 
-              id="vid-6944b7c90ad384f5108421da" 
+              id="vid-6944c6a276990ab694f4b7de" 
               style="display: block; margin: 0 auto; width: 100%; height: 100%; position: absolute; top: 0; left: 0;"
             ></vturb-smartplayer>
           </div>
         `;
 
-        const existingScript = document.querySelector('script[src="https://scripts.converteai.net/ea3c2dc1-1976-40a2-b0fb-c5055f82bfaf/players/6944b7c90ad384f5108421da/v4/player.js"]');
+        const existingScript = document.querySelector('script[src="https://scripts.converteai.net/ea3c2dc1-1976-40a2-b0fb-c5055f82bfaf/players/6944c6a276990ab694f4b7de/v4/player.js"]');
         
         if (!existingScript) {
           const s = document.createElement("script");
-          s.src = "https://scripts.converteai.net/ea3c2dc1-1976-40a2-b0fb-c5055f82bfaf/players/6944b7c90ad384f5108421da/v4/player.js";
+          s.src = "https://scripts.converteai.net/ea3c2dc1-1976-40a2-b0fb-c5055f82bfaf/players/6944c6a276990ab694f4b7de/v4/player.js";
           s.async = true;
           
           s.onload = () => {
