@@ -858,7 +858,7 @@ export default function Result({ onNavigate }: ResultProps) {
       </div>
 
       {/* BARRA DE URGÊNCIA STICKY (SEM BOTÃO) - Aparece quando currentPhase >= 2 (vídeo começa) */}
-      {currentPhase >= 2 && (
+      {currentPhase >= 3 && (
         <div className="sticky-urgency-bar-only" style={{
           position: 'fixed',
           bottom: 0,
