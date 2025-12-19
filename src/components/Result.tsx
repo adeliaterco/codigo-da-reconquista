@@ -160,7 +160,7 @@ export default function Result({ onNavigate }: ResultProps) {
       playKeySound();
       tracking.revelationViewed('72h_window');
       ga4Tracking.revelationViewed('Ventana 72 Horas', 2);
-    }, 14000); // 6s após o vídeo iniciar, permitindo algum tempo de visualização
+    }, 30000); // 6s após o vídeo iniciar, permitindo algum tempo de visualização
 
     // 5. Fase 4: Oferta (automaticamente após Janela 72h) - ~17s
     const timerPhase4 = setTimeout(() => {
