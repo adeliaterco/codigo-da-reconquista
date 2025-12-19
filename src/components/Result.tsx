@@ -22,17 +22,15 @@ interface ResultProps {
 }
 
 export default function Result({ onNavigate }: ResultProps) {
-  const [revelation1, setRevelation1] = useState(false);
-  const [revelation2, setRevelation2] = useState(false);
-  const [showOfferButton, setShowOfferButton] = useState(false);
-  const [revelation3, setRevelation3] = useState(false);
-  const [revelation4, setRevelation4] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(47 * 60);
+  // --- ESTADO PARA CONTROLE DE FASES E GAMIFICAÇÃO ---
+  const [currentPhase, setCurrentPhase] = useState(0); // 0: Loading, 1: Diagnosis, 2: Video, 3: Ventana 72h, 4: Offer
+  const [stickyCtaVisible, setStickyCtaVisible] = useState(false); // Controla a visibilidade da CTA sticky
+  const [timeLeft, setTimeLeft] = useState(47 * 60); // 47 minutos
   const [spotsLeft, setSpotsLeft] = useState(storage.getSpotsLeft());
-  
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [loadingStep, setLoadingStep] = useState(0);
-  
+  const [peopleBuying, setPeopleBuying] = useState(Math.floor(Math.random() * 5) + 1); // Gamificação: contador de pessoas comprando
+
   const quizData = storage.getQuizData();
   const videoContainerRef = useRef<HTMLDivElement>(null);
   const offerSectionRef = useRef<HTMLDivElement>(null);
@@ -46,15 +44,15 @@ export default function Result({ onNavigate }: ResultProps) {
     { icon: '📋', text: getLoadingMessage(gender), duration: 6000 }
   ];
 
-  // ========================================
+  // 
   // ✅ SISTEMA DE PRESERVAÇÃO E ANEXAÇÃO DE UTMs
-  // ========================================
+  // 
   
   const getUTMs = (): Record<string, string> => {
     try {
       const storedUTMs = localStorage.getItem('quiz_utms');
       if (storedUTMs) {
-        return JSON.parse(storedUTMs);
+        return JSON.parse(storedUTMS);
       }
     } catch (error) {
       console.error('❌ Erro ao recuperar UTMs:', error);
@@ -107,13 +105,13 @@ export default function Result({ onNavigate }: ResultProps) {
     }
   };
 
+  // --- EFEITO PRINCIPAL PARA PROGRESSÃO DE FASES E TIMINGS ---
   useEffect(() => {
-    // ✅ GARANTE QUE AS UTMs ESTEJAM PRESERVADAS
     ensureUTMs();
-
     tracking.pageView('resultado');
     ga4Tracking.resultPageView();
 
+    // 1. Loading inicial (0-6.5s)
     const progressInterval = setInterval(() => {
       setLoadingProgress(prev => {
         if (prev >= 100) {
@@ -130,32 +128,52 @@ export default function Result({ onNavigate }: ResultProps) {
       }, step.duration);
     });
 
-    const timer1 = setTimeout(() => {
-      setRevelation1(true);
+    // 2. Fase 1: Diagnóstico (após loading) - ~6.5s
+    const timerPhase1 = setTimeout(() => {
+      setCurrentPhase(1); // Diagnóstico
+      playKeySound();
       tracking.revelationViewed('why_left');
       ga4Tracking.revelationViewed('Por qué te dejó', 1);
     }, 6500);
 
-    const timer2 = setTimeout(() => {
-      setRevelation2(true);
-      tracking.revelationViewed('72h_window');
-      ga4Tracking.revelationViewed('Ventana 72 Horas', 2);
-    }, 12500);
-
-    const timer3 = setTimeout(() => {
-      setShowOfferButton(true);
-      tracking.revelationViewed('vsl');
+    // 3. Fase 2: Vídeo (após diagnóstico) - ~8s
+    const timerPhase2 = setTimeout(() => {
+      setCurrentPhase(2); // Vídeo
+      playKeySound();
       tracking.vslEvent('started');
       ga4Tracking.videoStarted();
-    }, 15500);
+    }, 8000); // 1.5s após o diagnóstico aparecer
 
+    // 4. Fase 3: Janela 72h (após vídeo iniciar) - ~14s
+    const timerPhase3 = setTimeout(() => {
+      setCurrentPhase(3); // Janela 72h
+      playKeySound();
+      tracking.revelationViewed('72h_window');
+      ga4Tracking.revelationViewed('Ventana 72 Horas', 2);
+    }, 14000); // 6s após o vídeo iniciar, permitindo algum tempo de visualização
+
+    // 5. Fase 4: Oferta (automaticamente após Janela 72h) - ~17s
+    const timerPhase4 = setTimeout(() => {
+      setCurrentPhase(4); // Oferta
+      playKeySound();
+      tracking.revelationViewed('offer');
+      ga4Tracking.revelationViewed('Oferta Revelada', 3);
+      ga4Tracking.offerRevealed();
+      // Scroll automático para a seção da oferta
+      if (offerSectionRef.current) {
+        offerSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 17000); // 3s após a Janela 72h aparecer
+
+    // 6. Fase 5: CTA Sticky (aparece quando a oferta está visível) - ~20s
+    const timerPhase5 = setTimeout(() => {
+      setStickyCtaVisible(true);
+      ga4Tracking.offerViewed(); // Oferta totalmente visualizada
+    }, 20000); // 3s após a oferta aparecer
+
+    // --- Timers contínuos ---
     const countdownInterval = setInterval(() => {
-      setTimeLeft(prev => {
-        if (prev <= 1) {
-          return 0;
-        }
-        return prev - 1;
-      });
+      setTimeLeft(prev => (prev <= 1 ? 0 : prev - 1));
     }, 1000);
 
     const spotsInterval = setInterval(() => {
@@ -170,35 +188,50 @@ export default function Result({ onNavigate }: ResultProps) {
       });
     }, 45000);
 
+    // Gamificação: Contador de pessoas comprando
+    const buyingInterval = setInterval(() => {
+      setPeopleBuying(prev => {
+        const change = Math.random() > 0.5 ? 1 : -1;
+        let newCount = prev + change;
+        if (newCount < 1) newCount = 1; // Não vai abaixo de 1
+        if (newCount > 7) newCount = 7; // Máximo 7 para realismo
+        return newCount;
+      });
+    }, Math.floor(Math.random() * 10000) + 5000); // Atualiza a cada 5-15 segundos
+
     return () => {
       clearInterval(progressInterval);
-      clearTimeout(timer1);
-      clearTimeout(timer2);
-      clearTimeout(timer3);
+      clearTimeout(timerPhase1);
+      clearTimeout(timerPhase2);
+      clearTimeout(timerPhase3);
+      clearTimeout(timerPhase4);
+      clearTimeout(timerPhase5);
       clearInterval(countdownInterval);
       clearInterval(spotsInterval);
+      clearInterval(buyingInterval);
     };
   }, []);
 
+  // --- EFEITO PARA INJEÇÃO DO VÍDEO VTURB ---
   useEffect(() => {
-    if (!revelation2 || !videoContainerRef.current) return;
+    if (currentPhase !== 2 || !videoContainerRef.current) return; // Ativa quando currentPhase é 2
 
-    const timer = setTimeout(() => {
+    const timer = setTimeout(() => { // Pequeno delay para garantir que o DOM esteja pronto
       if (videoContainerRef.current) {
         videoContainerRef.current.innerHTML = `
           <div style="position: relative; width: 100%; padding-bottom: 56.25%; background: #000; border-radius: 8px; overflow: hidden;">
             <vturb-smartplayer 
-              id="vid-6938c3eeb96ec714286a4c2b" 
+              id="vid-6944b7c90ad384f5108421da" 
               style="display: block; margin: 0 auto; width: 100%; height: 100%; position: absolute; top: 0; left: 0;"
             ></vturb-smartplayer>
           </div>
         `;
 
-        const existingScript = document.querySelector('script[src="https://scripts.converteai.net/ea3c2dc1-1976-40a2-b0fb-c5055f82bfaf/players/6938c3eeb96ec714286a4c2b/v4/player.js"]');
+        const existingScript = document.querySelector('script[src="https://scripts.converteai.net/ea3c2dc1-1976-40a2-b0fb-c5055f82bfaf/players/6944b7c90ad384f5108421da/v4/player.js"]');
         
         if (!existingScript) {
           const s = document.createElement("script");
-          s.src = "https://scripts.converteai.net/ea3c2dc1-1976-40a2-b0fb-c5055f82bfaf/players/6938c3eeb96ec714286a4c2b/v4/player.js";
+          s.src = "https://scripts.converteai.net/ea3c2dc1-1976-40a2-b0fb-c5055f82bfaf/players/6944b7c90ad384f5108421da/v4/player.js";
           s.async = true;
           
           s.onload = () => {
@@ -225,7 +258,7 @@ export default function Result({ onNavigate }: ResultProps) {
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [revelation2]);
+  }, [currentPhase]); // Dependência em currentPhase
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -233,7 +266,6 @@ export default function Result({ onNavigate }: ResultProps) {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  // ✅ FUNÇÃO MODIFICADA PARA ANEXAR UTMs AO HOTMART
   const handleCTAClick = () => {
     tracking.ctaClicked('result_buy');
     ga4Tracking.ctaBuyClicked('result_buy_main');
@@ -242,28 +274,7 @@ export default function Result({ onNavigate }: ResultProps) {
     window.open(hotmartURLWithUTMs, '_blank');
   };
 
-  const handleRevealOffer = () => {
-    playKeySound();
-    setRevelation3(true);
-    tracking.revelationViewed('offer');
-    tracking.ctaClicked('reveal_offer_button');
-    ga4Tracking.revelationViewed('Oferta Revelada', 3);
-    ga4Tracking.offerRevealed();
-    
-    setTimeout(() => {
-      if (offerSectionRef.current) {
-        offerSectionRef.current.scrollIntoView({ 
-          behavior: 'smooth', 
-          block: 'start' 
-        });
-      }
-    }, 300);
-
-    setTimeout(() => {
-      setRevelation4(true);
-      ga4Tracking.offerViewed();
-    }, 3000);
-  };
+  const phases = ['Diagnóstico', 'Video', 'Ventana 72h', 'Oferta'];
 
   return (
     <div className="result-container">
@@ -275,10 +286,27 @@ export default function Result({ onNavigate }: ResultProps) {
         </div>
       </div>
 
+      {/* GAMIFICAÇÃO: BARRA DE PROGRESSO */}
+      {currentPhase > 0 && (
+        <div className="progress-bar-container fade-in">
+          {phases.map((label, index) => (
+            <div 
+              key={index} 
+              className={`progress-step ${currentPhase > index + 1 ? 'completed' : ''} ${currentPhase === index + 1 ? 'active' : ''}`}
+            >
+              <div className="step-circle">
+                {currentPhase > index + 1 ? '✅' : index + 1}
+              </div>
+              <span className="step-label">{label}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
       <div className="revelations-container">
         
-        {/* LOADING INICIAL */}
-        {!revelation1 && (
+        {/* LOADING INICIAL (currentPhase === 0) */}
+        {currentPhase === 0 && (
           <div className="revelation fade-in" style={{
             display: 'flex',
             justifyContent: 'center',
@@ -421,8 +449,8 @@ export default function Result({ onNavigate }: ResultProps) {
           </div>
         )}
 
-        {/* REVELACIÓN 1: POR QUÉ TE DEJÓ */}
-        {revelation1 && (
+        {/* FASE 1: DIAGNÓSTICO (currentPhase >= 1) */}
+        {currentPhase >= 1 && (
           <div className="revelation fade-in">
             <div className="revelation-header">
               <div className="revelation-icon">💔</div>
@@ -451,7 +479,34 @@ export default function Result({ onNavigate }: ResultProps) {
                 {getEmotionalValidation(quizData)}
               </p>
             </div>
+          </div>
+        )}
 
+        {/* FASE 2: VÍDEO (currentPhase >= 2) */}
+        {currentPhase >= 2 && (
+          <div className="revelation fade-in vsl-revelation">
+            <div className="revelation-header">
+              <div className="revelation-icon">🎥</div>
+              <h2>Mira Tu Plan Personalizado</h2>
+            </div>
+            <div className="vsl-container">
+              <div 
+                ref={videoContainerRef}
+                style={{ 
+                  width: '100%', 
+                  minHeight: '300px',
+                  background: '#000',
+                  borderRadius: '8px'
+                }}
+              >
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* FASE 3: JANELA DE 72 HORAS (currentPhase >= 3) */}
+        {currentPhase >= 3 && (
+          <div className="revelation fade-in">
             <div style={{
               background: 'linear-gradient(135deg, rgba(220, 38, 38, 0.15) 0%, rgba(239, 68, 68, 0.05) 100%)',
               border: '2px solid rgb(239, 68, 68)',
@@ -589,7 +644,7 @@ export default function Result({ onNavigate }: ResultProps) {
                   margin: 0,
                   lineHeight: '1.5'
                 }}>
-                  El video abajo revela todo el protocolo paso a paso
+                  El video arriba revela todo el protocolo paso a paso
                 </p>
               </div>
 
@@ -597,118 +652,8 @@ export default function Result({ onNavigate }: ResultProps) {
           </div>
         )}
 
-        {/* REVELACIÓN 2: VSL */}
-        {revelation2 && (
-          <div className="revelation fade-in vsl-revelation">
-            <div className="revelation-header">
-              <div className="revelation-icon">🎥</div>
-              <h2>Mira Tu Plan Personalizado</h2>
-            </div>
-            <div className="vsl-container">
-              <div 
-                ref={videoContainerRef}
-                style={{ 
-                  width: '100%', 
-                  minHeight: '300px',
-                  background: '#000',
-                  borderRadius: '8px'
-                }}
-              >
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* BOTÃO REVELAR OFERTA */}
-        {showOfferButton && !revelation3 && (
-          <div className="revelation fade-in" style={{
-            textAlign: 'center',
-            padding: 'clamp(32px, 8vw, 64px) clamp(16px, 4vw, 24px)',
-            marginTop: 'clamp(24px, 6vw, 32px)'
-          }}>
-            <div style={{
-              background: 'linear-gradient(135deg, rgba(234, 179, 8, 0.2) 0%, rgba(202, 138, 4, 0.1) 100%)',
-              border: '3px solid rgb(234, 179, 8)',
-              borderRadius: '16px',
-              padding: 'clamp(32px, 7vw, 48px) clamp(20px, 5vw, 32px)',
-              boxShadow: '0 12px 48px rgba(234, 179, 8, 0.4)',
-              animation: 'pulse 2s infinite'
-            }}>
-              <div style={{
-                fontSize: 'clamp(2.5rem, 8vw, 3.5rem)',
-                marginBottom: 'clamp(16px, 4vw, 24px)'
-              }}>🎁</div>
-              
-              <h2 style={{
-                fontSize: 'clamp(1.5rem, 6vw, 2.25rem)',
-                fontWeight: '900',
-                color: 'white',
-                marginBottom: 'clamp(16px, 4vw, 24px)',
-                lineHeight: '1.3'
-              }}>
-                Tu Oferta Exclusiva Está Lista
-              </h2>
-              
-              <p style={{
-                fontSize: 'clamp(1rem, 4vw, 1.25rem)',
-                color: 'rgb(253, 224, 71)',
-                marginBottom: 'clamp(24px, 6vw, 32px)',
-                lineHeight: '1.5',
-                fontWeight: '600'
-              }}>
-                Acceso inmediato al Plan Completo de 21 Días
-              </p>
-
-              <button
-                onClick={handleRevealOffer}
-                style={{
-                  width: '100%',
-                  maxWidth: '500px',
-                  background: 'rgb(234, 179, 8)',
-                  color: 'black',
-                  fontWeight: '900',
-                  padding: 'clamp(20px, 5vw, 28px) clamp(24px, 6vw, 32px)',
-                  borderRadius: '16px',
-                  fontSize: 'clamp(1.25rem, 5vw, 1.75rem)',
-                  border: '4px solid white',
-                  cursor: 'pointer',
-                  boxShadow: '0 8px 32px rgba(234, 179, 8, 0.5)',
-                  transition: 'all 0.3s ease',
-                  minHeight: 'clamp(64px, 16vw, 80px)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  margin: '0 auto',
-                  lineHeight: '1.3',
-                  animation: 'scaleUp 1.5s ease-in-out infinite'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'scale(1.05)';
-                  e.currentTarget.style.boxShadow = '0 12px 48px rgba(234, 179, 8, 0.7)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'scale(1)';
-                  e.currentTarget.style.boxShadow = '0 8px 32px rgba(234, 179, 8, 0.5)';
-                }}
-              >
-                🔓 VER MI OFERTA EXCLUSIVA
-              </button>
-
-              <p style={{
-                fontSize: 'clamp(0.875rem, 3.5vw, 1rem)',
-                color: 'rgb(252, 165, 165)',
-                marginTop: 'clamp(16px, 4vw, 20px)',
-                fontWeight: '600',
-                lineHeight: '1.5'
-              }}>
-                ⏰ Precio especial válido solo por {formatTime(timeLeft)}
-              </p>
-            </div>
-          </div>
-        )}
-
-        {/* REVELACIÓN 3: OFERTA */}
-        {revelation3 && (
+        {/* FASE 4: OFERTA (currentPhase >= 4) */}
+        {currentPhase >= 4 && (
           <div 
             ref={offerSectionRef}
             className="revelation fade-in offer-revelation" 
@@ -874,6 +819,18 @@ export default function Result({ onNavigate }: ResultProps) {
               {getCTA(gender)}
             </button>
 
+            {/* GAMIFICAÇÃO: CONTADOR DE PESSOAS COMPRANDO */}
+            <p className="people-buying-counter" style={{
+              textAlign: 'center',
+              color: 'rgb(74, 222, 128)',
+              fontSize: 'clamp(0.875rem, 3.5vw, 1.125rem)',
+              marginBottom: 'clamp(12px, 3vw, 16px)',
+              lineHeight: '1.5',
+              fontWeight: '600'
+            }}>
+              ✨ {peopleBuying} personas están comprando ahora mismo
+            </p>
+
             <p className="social-proof-count" style={{
               textAlign: 'center',
               color: 'rgb(74, 222, 128)',
@@ -898,7 +855,8 @@ export default function Result({ onNavigate }: ResultProps) {
         )}
       </div>
 
-      {revelation4 && (
+      {/* FASE 5: CTA STICKY (stickyCtaVisible) */}
+      {stickyCtaVisible && (
         <div className="sticky-cta" style={{
           position: 'fixed',
           bottom: 0,
@@ -987,6 +945,116 @@ export default function Result({ onNavigate }: ResultProps) {
           to {
             opacity: 1;
             transform: translateY(0);
+          }
+        }
+
+        /* --- Estilos para a Barra de Progresso (Gamificação) --- */
+        .progress-bar-container {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin: clamp(20px, 5vw, 30px) auto;
+          max-width: 800px;
+          padding: clamp(10px, 3vw, 15px);
+          background: rgba(0, 0, 0, 0.4);
+          border-radius: 12px;
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+          position: sticky;
+          top: 0;
+          z-index: 999;
+          backdrop-filter: blur(5px);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .progress-step {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          flex: 1;
+          position: relative;
+          color: rgba(255, 255, 255, 0.5);
+          font-size: clamp(0.7rem, 2.5vw, 0.9rem);
+          font-weight: 600;
+          transition: all 0.3s ease;
+        }
+
+        .progress-step:not(:last-child)::after {
+          content: '';
+          position: absolute;
+          width: 100%;
+          height: 2px;
+          background: rgba(255, 255, 255, 0.2);
+          left: 50%;
+          top: 18px; /* Ajuste para alinhar com o centro do círculo */
+          z-index: 0;
+        }
+
+        .progress-step.completed:not(:last-child)::after {
+          background: rgb(74, 222, 128);
+        }
+
+        .step-circle {
+          width: clamp(30px, 7vw, 36px);
+          height: clamp(30px, 7vw, 36px);
+          border-radius: 50%;
+          background: rgba(255, 255, 255, 0.2);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          margin-bottom: 5px;
+          font-size: clamp(0.9rem, 3.5vw, 1.1rem);
+          font-weight: bold;
+          color: rgba(255, 255, 255, 0.7);
+          border: 2px solid rgba(255, 255, 255, 0.3);
+          position: relative;
+          z-index: 1;
+          transition: all 0.3s ease;
+        }
+
+        .progress-step.completed .step-circle {
+          background: rgb(74, 222, 128);
+          color: white;
+          border-color: rgb(74, 222, 128);
+        }
+
+        .progress-step.active .step-circle {
+          background: rgb(234, 179, 8);
+          color: black;
+          border-color: rgb(250, 204, 21);
+          animation: pulse-active 1.5s infinite;
+        }
+
+        .progress-step.active .step-label {
+          color: rgb(250, 204, 21);
+        }
+
+        @keyframes pulse-active {
+          0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(250, 204, 21, 0.7); }
+          70% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(250, 204, 21, 0); }
+          100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(250, 204, 21, 0); }
+        }
+
+        .step-label {
+          text-align: center;
+          line-height: 1.2;
+        }
+
+        @media (max-width: 768px) {
+          .progress-bar-container {
+            flex-wrap: wrap;
+            padding: 10px;
+          }
+          .progress-step {
+            flex-basis: 50%; /* 2 colunas em mobile */
+            margin-bottom: 15px;
+          }
+          .progress-step:nth-child(odd)::after {
+            width: calc(100% + 10px); /* Ajuste para conectar entre colunas */
+            left: 50%;
+            transform: translateX(-50%);
+          }
+          .progress-step:nth-child(even)::after {
+            display: none; /* Não conecta para a direita */
           }
         }
       `}</style>
