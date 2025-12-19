@@ -487,7 +487,7 @@ export default function Result({ onNavigate }: ResultProps) {
           <div className="revelation fade-in vsl-revelation">
             <div className="revelation-header">
               <div className="revelation-icon">🎥</div>
-              <h2>Mira Tu Plan Personalizado</h2>
+              <h2>Cómo Reactivar Los Interruptores Emocionales En 72 Horas</h2>
             </div>
             <div className="vsl-container">
               <div 
