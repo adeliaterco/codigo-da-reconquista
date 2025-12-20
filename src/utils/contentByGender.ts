@@ -65,8 +65,8 @@ export function getFeatures(gender: string): string[] {
 
 export function getCTA(gender: string): string {
   return gender === 'HOMBRE'
-    ? 'SÍ, QUIERO MI PLAN PARA RECONQUISTAR A ELLA'
-    : 'SÍ, QUIERO MI PLAN PARA RECONQUISTAR A ÉL';
+    ? 'SÍ, QUIERO MI PLAN PARA RECONQUISTAR A ELLA $9,90'
+    : 'SÍ, QUIERO MI PLAN PARA RECONQUISTAR A ÉL $9,90';
 }
 
 export function getCompletionBadge(gender: string): { title: string; subtitle: string } {
