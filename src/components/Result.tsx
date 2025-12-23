@@ -12,7 +12,7 @@ import {
     getVentana72Copy,
     getOfferTitle,
     getFeatures, 
-    getCTA,
+    getCTA, // Keep getCTA for other uses if any, but hardcode final CTA
     getFaseText
 } from '../utils/contentByGender';
 import { getEmotionalValidation } from '../utils/emotionalValidation';
@@ -23,7 +23,19 @@ interface ResultProps {
 
 export default function Result({ onNavigate }: ResultProps) {
     // --- ESTADO UNIFICADO E CONTROLE DE FLUXO ---
-    const [currentPhase, setCurrentPhase] = useState(0); // 0: Loading, 1: Diagnosis, 2: Video, 3: Ventana, 4: Offer
+    const [currentPhase, setCurrentPhase] = useState(0);
+    const [fadeOutPhase, setFadeOutPhase] = useState<number | null>(null);
+
+    // --- ESTADOS PARA O DELAY DO BOTÃO DO VÍDEO ---
+    const [videoButtonDelayLeft, setVideoButtonDelayLeft] = useState(50);
+    const [isVideoButtonEnabled, setIsVideoButtonEnabled] = useState(false);
+
+    // --- ESTADO PARA OS CHECKMARKS DOS BOTÕES ---
+    const [buttonCheckmarks, setButtonCheckmarks] = useState<{[key: number]: boolean}>({
+        0: false, // For button after Diagnóstico (Phase 1)
+        1: false, // For button after Video (Phase 2)
+        2: false  // For button after Ventana (Phase 3)
+    });
 
     // --- PERSISTÊNCIA DO TIMER NO LOCALSTORAGE ---
     const getInitialTime = () => {
@@ -87,13 +99,12 @@ export default function Result({ onNavigate }: ResultProps) {
         return url.toString();
     };
 
-    // --- EFEITO PRINCIPAL DE PROGRESSÃO (SEM SCROLLS AUTOMÁTICOS) ---
+    // --- EFEITO PRINCIPAL DE PROGRESSÃO ---
     useEffect(() => {
         ensureUTMs();
         tracking.pageView('resultado');
         ga4Tracking.resultPageView();
 
-        // Loading acelerado
         const progressInterval = setInterval(() => {
             setLoadingProgress(prev => {
                 if (prev >= 100) {
@@ -108,38 +119,12 @@ export default function Result({ onNavigate }: ResultProps) {
             setTimeout(() => setLoadingStep(index), step.duration);
         });
 
-        // Fase 1: Diagnóstico em 2.5s (SEM SCROLL)
         const timerPhase1 = setTimeout(() => {
             setCurrentPhase(1);
             playKeySound();
             tracking.revelationViewed('why_left');
             ga4Tracking.revelationViewed('Por qué te dejó', 1);
         }, 2500);
-
-        // Fase 2: Vídeo em 8s (SEM SCROLL)
-        const timerPhase2 = setTimeout(() => {
-            setCurrentPhase(2);
-            playKeySound();
-            tracking.vslEvent('started');
-            ga4Tracking.videoStarted();
-        }, 8000);
-
-        // Fase 3: Ventana 72h em 58s (SEM SCROLL)
-        const timerPhase3 = setTimeout(() => {
-            setCurrentPhase(3);
-            playKeySound();
-            tracking.revelationViewed('72h_window');
-            ga4Tracking.revelationViewed('Ventana 72 Horas', 2);
-        }, 58000);
-
-        // Fase 4: Oferta em 68s (SEM SCROLL)
-        const timerPhase4 = setTimeout(() => {
-            setCurrentPhase(4);
-            playKeySound();
-            tracking.revelationViewed('offer');
-            ga4Tracking.revelationViewed('Oferta Revelada', 3);
-            ga4Tracking.offerRevealed();
-        }, 68000);
 
         const countdownInterval = setInterval(() => setTimeLeft(prev => (prev <= 1 ? 0 : prev - 1)), 1000);
 
@@ -168,28 +153,36 @@ export default function Result({ onNavigate }: ResultProps) {
         return () => {
             clearInterval(progressInterval);
             clearTimeout(timerPhase1);
-            clearTimeout(timerPhase2);
-            clearTimeout(timerPhase3);
-            clearTimeout(timerPhase4);
             clearInterval(countdownInterval);
             clearInterval(spotsInterval);
             clearInterval(buyingInterval);
         };
     }, []);
 
-    // ========================================
-    // ✅ CORREÇÃO APLICADA: USEEFFECT REMOVIDO
-    // ========================================
-    // O bloco abaixo foi REMOVIDO para não forçar redirect quando timer expira:
-    /*
+    // --- EFEITO PARA O DELAY DO BOTÃO DO VÍDEO (FASE 2) ---
     useEffect(() => {
-        if (timeLeft <= 0 && currentPhase > 0) {
-            alert('Tu análisis ha expirado. Por favor, completa el quiz nuevamente.');
-            localStorage.removeItem('quiz_timer_start');
-            window.location.href = '/';
+        let delayInterval: NodeJS.Timeout;
+        if (currentPhase === 2) {
+            setVideoButtonDelayLeft(50);
+            setIsVideoButtonEnabled(false);
+
+            delayInterval = setInterval(() => {
+                setVideoButtonDelayLeft(prev => {
+                    if (prev <= 1) {
+                        clearInterval(delayInterval);
+                        setIsVideoButtonEnabled(true);
+                        ga4Tracking.videoButtonUnlocked({ unlock_time_seconds: 50, video_name: 'VSL Plan Personalizado' });
+                        return 0;
+                    }
+                    return prev - 1;
+                });
+            }, 1000);
         }
-    }, [timeLeft, currentPhase]);
-    */
+
+        return () => {
+            if (delayInterval) clearInterval(delayInterval);
+        };
+    }, [currentPhase]);
 
     // Injeção VTurb
     useEffect(() => {
@@ -213,16 +206,91 @@ export default function Result({ onNavigate }: ResultProps) {
         return () => clearTimeout(timer);
     }, [currentPhase]);
 
+    // --- EFEITO PARA SCROLL AUTOMÁTICO ---
+    useEffect(() => {
+        let targetRef: React.RefObject<HTMLDivElement> | null = null;
+        switch (currentPhase) {
+            case 1: targetRef = diagnosticoSectionRef; break;
+            case 2: targetRef = videoSectionRef; break;
+            case 3: targetRef = ventana72SectionRef; break;
+            case 4: targetRef = offerSectionRef; break;
+        }
+
+        if (targetRef && targetRef.current) {
+            // Adiciona um pequeno delay para garantir que a seção já está montada e visível
+            setTimeout(() => {
+                targetRef!.current!.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100); 
+        }
+    }, [currentPhase]);
+
     const formatTime = (seconds: number) => {
         const mins = Math.floor(seconds / 60);
         const secs = seconds % 60;
         return `${mins}:${secs.toString().padStart(2, '0')}`;
     };
 
+    // --- HANDLERS DE CLIQUE DOS BOTÕES COM TRANSIÇÃO ---
+    const handlePhase1ButtonClick = () => {
+        playKeySound();
+        setButtonCheckmarks(prev => ({ ...prev, 0: true })); // Show checkmark for button 0
+        setFadeOutPhase(1); // Start fading out current section (Diagnóstico)
+
+        setTimeout(() => {
+            setCurrentPhase(2); // Advance to next phase (Video)
+            ga4Tracking.phaseProgressionClicked({ phase_from: 1, phase_to: 2, button_name: 'Desbloquear El Vídeo Secreto' });
+            tracking.vslEvent('started');
+            ga4Tracking.videoStarted();
+            setFadeOutPhase(null); // Clear fade out state
+            // buttonCheckmarks[0] remains true, but section 1 is unmounted
+        }, 1300); // 0.3s fade-out + 1s for checkmark animation/display
+    };
+
+    const handlePhase2ButtonClick = () => {
+        if (!isVideoButtonEnabled) return;
+        playKeySound();
+        setButtonCheckmarks(prev => ({ ...prev, 1: true })); // Show checkmark for button 1
+        setFadeOutPhase(2); // Start fading out current section (Video)
+
+        setTimeout(() => {
+            setCurrentPhase(3); // Advance to next phase (Ventana 72h)
+            ga4Tracking.phaseProgressionClicked({ phase_from: 2, phase_to: 3, button_name: 'Revelar VENTANA DE 72 HORAS' });
+            tracking.revelationViewed('72h_window');
+            ga4Tracking.revelationViewed('Ventana 72 Horas', 2);
+            setFadeOutPhase(null); // Clear fade out state
+            // buttonCheckmarks[1] remains true, but section 2 is unmounted
+        }, 1300); // 0.3s fade-out + 1s for checkmark animation/display
+    };
+
+    const handlePhase3ButtonClick = () => {
+        playKeySound();
+        setButtonCheckmarks(prev => ({ ...prev, 2: true })); // Show checkmark for button 2
+        setFadeOutPhase(3); // Start fading out current section (Ventana 72h)
+
+        setTimeout(() => {
+            setCurrentPhase(4); // Advance to next phase (Oferta)
+            ga4Tracking.phaseProgressionClicked({ phase_from: 3, phase_to: 4, button_name: 'Revelar Mi Plan Personalizado' });
+            tracking.revelationViewed('offer');
+            ga4Tracking.revelationViewed('Oferta Revelada', 3);
+            ga4Tracking.offerRevealed();
+            setFadeOutPhase(null); // Clear fade out state
+            // buttonCheckmarks[2] remains true, but section 3 is unmounted
+        }, 1300); // 0.3s fade-out + 1s for checkmark animation/display
+    };
+
     const handleCTAClick = () => {
         tracking.ctaClicked('result_buy');
         ga4Tracking.ctaBuyClicked('result_buy_main');
         window.open(appendUTMsToHotmartURL(), '_blank');
+    };
+
+    // --- HELPER PARA EMOJI DO DELAY ---
+    const getDelayEmoji = (secondsLeft: number) => {
+        const progress = (50 - secondsLeft) / 50;
+        if (progress < 0.2) return '😴';
+        if (progress < 0.4) return '⏳';
+        if (progress < 0.7) return '🔥';
+        return '🚀';
     };
 
     const phases = ['Diagnóstico', 'Vídeo', 'Ventana 72h', 'Solución'];
@@ -275,8 +343,11 @@ export default function Result({ onNavigate }: ResultProps) {
                 )}
 
                 {/* FASE 1: DIAGNÓSTICO */}
-                {currentPhase >= 1 && (
-                    <div ref={diagnosticoSectionRef} className={`revelation fade-in ${currentPhase === 1 ? 'diagnostic-pulse' : ''}`}>
+                {currentPhase === 1 && ( // Render only if currentPhase is 1
+                    <div 
+                        ref={diagnosticoSectionRef} 
+                        className={`revelation fade-in ${fadeOutPhase === 1 ? 'fade-out' : ''}`}
+                    >
                         <div className="revelation-header">
                             <div className="revelation-icon">💔</div>
                             <h2>{getTitle(gender)}</h2>
@@ -297,12 +368,29 @@ export default function Result({ onNavigate }: ResultProps) {
                         <div className="emotional-validation">
                             <p><strong>Tu situación específica:</strong><br />{getEmotionalValidation(quizData)}</p>
                         </div>
+
+                        {/* BOTÃO 1: DESBLOQUEAR VÍDEO */}
+                        {buttonCheckmarks[0] ? (
+                            <div className="checkmark-container">
+                                <div className="checkmark-glow">✅</div>
+                            </div>
+                        ) : (
+                            <button 
+                                className="cta-button btn-green btn-size-1 btn-animation-fadein" 
+                                onClick={handlePhase1ButtonClick}
+                            >
+                                🔓 Desbloquear El Vídeo Secreto
+                            </button>
+                        )}
                     </div>
                 )}
 
                 {/* FASE 2: VÍDEO */}
-                {currentPhase >= 2 && (
-                    <div ref={videoSectionRef} className="revelation fade-in vsl-revelation">
+                {currentPhase === 2 && ( // Render only if currentPhase is 2
+                    <div 
+                        ref={videoSectionRef} 
+                        className={`revelation fade-in vsl-revelation ${fadeOutPhase === 2 ? 'fade-out' : ''}`}
+                    >
                         <div className="revelation-header">
                             <div className="revelation-icon">🎥</div>
                             <h2>Cómo Reactivar Los Interruptores Emocionales En 72 Horas</h2>
@@ -310,47 +398,51 @@ export default function Result({ onNavigate }: ResultProps) {
                         <div className="vsl-container">
                             <div className="vsl-placeholder"></div> 
                         </div>
-                    </div>
-                )}
 
-                {/* LOADING VISUAL ABAIXO DO VÍDEO */}
-                {currentPhase === 2 && (
-                    <div className="revelation fade-in" style={{
-                        backgroundColor: 'rgba(234, 179, 8, 0.1)',
-                        border: '2px solid #eab308',
-                        padding: '30px',
-                        borderRadius: '12px',
-                        marginTop: '20px',
-                        textAlign: 'center',
-                        color: 'white',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        gap: '15px'
-                    }}>
-                        <div className="spinner" style={{
-                            border: '4px solid rgba(255, 255, 255, 0.3)',
-                            borderTop: '4px solid #eab308',
-                            borderRadius: '50%',
-                            width: '40px',
-                            height: '40px',
-                            animation: 'spin 1s linear infinite'
-                        }}></div>
-                        <p style={{ margin: 0, fontSize: '1.1rem', fontWeight: 'bold' }}>
-                            ⏳ Preparando tu análisis de la Ventana de 72 Horas...
-                        </p>
-                        <div className="loading-dots" style={{
-                            fontSize: '1.5rem',
-                            animation: 'loadingDots 1.5s infinite'
-                        }}>
-                            <span>.</span><span>.</span><span>.</span>
-                        </div>
+                        {/* BOTÃO 2: REVELAR VENTANA DE 72 HORAS (COM DELAY E INDICADOR) */}
+                        {buttonCheckmarks[1] ? (
+                            <div className="checkmark-container">
+                                <div className="checkmark-glow">✅</div>
+                            </div>
+                        ) : (
+                            <div className="video-delay-indicator">
+                                {!isVideoButtonEnabled ? (
+                                    <>
+                                        <p className="delay-text">
+                                            {getDelayEmoji(videoButtonDelayLeft)} Próxima sección en {videoButtonDelayLeft} segundos...
+                                        </p>
+                                        <div className="delay-progress-bar-container">
+                                            <div 
+                                                className="delay-progress-bar" 
+                                                style={{ width: `${((50 - videoButtonDelayLeft) / 50) * 100}%` }}
+                                            ></div>
+                                        </div>
+                                        <button 
+                                            className="cta-button btn-yellow btn-size-2 btn-animation-bounce disabled" 
+                                            disabled
+                                        >
+                                            Revelar VENTANA DE 72 HORAS
+                                        </button>
+                                    </>
+                                ) : (
+                                    <button 
+                                        className="cta-button btn-yellow btn-size-2 btn-animation-bounce" 
+                                        onClick={handlePhase2ButtonClick}
+                                    >
+                                        Revelar VENTANA DE 72 HORAS
+                                    </button>
+                                )}
+                            </div>
+                        )}
                     </div>
                 )}
 
                 {/* FASE 3: VENTANA 72H */}
-                {currentPhase >= 3 && (
-                    <div ref={ventana72SectionRef} className="revelation fade-in ventana-box-custom">
+                {currentPhase === 3 && ( // Render only if currentPhase is 3
+                    <div 
+                        ref={ventana72SectionRef} 
+                        className={`revelation fade-in ventana-box-custom ${fadeOutPhase === 3 ? 'fade-out' : ''}`}
+                    >
                         <div className="ventana-header-custom">
                             <span>⚡</span>
                             <h2>LA VENTANA DE 72 HORAS</h2>
@@ -369,27 +461,25 @@ export default function Result({ onNavigate }: ResultProps) {
                             alt="Ventana 72h" 
                             className="ventana-img"
                         />
-                    </div>
-                )}
 
-                {/* LOADING DISCRETO ENTRE VENTANA E OFERTA */}
-                {currentPhase === 3 && (
-                    <div className="revelation fade-in" style={{
-                        backgroundColor: 'rgba(0,0,0,0.3)',
-                        padding: '20px',
-                        borderRadius: '8px',
-                        marginTop: '20px',
-                        textAlign: 'center',
-                        color: 'rgb(253, 224, 71)',
-                        fontSize: '1.1rem',
-                        fontWeight: 'bold'
-                    }}>
-                        🎯 Preparando tu oferta exclusiva...
+                        {/* BOTÃO 3: REVELAR MI PLAN PERSONALIZADO */}
+                        {buttonCheckmarks[2] ? (
+                            <div className="checkmark-container">
+                                <div className="checkmark-glow">✅</div>
+                            </div>
+                        ) : (
+                            <button 
+                                className="cta-button btn-orange btn-size-3 btn-animation-pulse" 
+                                onClick={handlePhase3ButtonClick}
+                            >
+                                ⚡ Revelar Mi Plan Personalizado
+                            </button>
+                        )}
                     </div>
                 )}
 
                 {/* FASE 4: OFERTA (OTIMIZADA) */}
-                {currentPhase >= 4 && (
+                {currentPhase >= 4 && ( // Render if currentPhase is 4 or greater (final phase)
                     <div ref={offerSectionRef} className="revelation fade-in offer-section-custom">
                         <div className="offer-badge">OFERTA EXCLUSIVA</div>
                         <h2 className="offer-title-main">{getOfferTitle(gender)}</h2>
@@ -464,8 +554,9 @@ export default function Result({ onNavigate }: ResultProps) {
                             <p className="price-discount">💰 85% de descuento HOY</p>
                         </div>
 
-                        <button className="cta-buy-final" onClick={handleCTAClick}>
-                            🎯 {getCTA(gender)}
+                        {/* BOTÃO 4: CTA FINAL */}
+                        <button className="cta-button btn-green btn-size-4 btn-animation-glowshake" onClick={handleCTAClick}>
+                            🚀 SÍ, QUIERO MI RECONQUISTA GARANTIZADA 🚀
                         </button>
 
                         {/* PROVA SOCIAL REAL */}
@@ -555,9 +646,110 @@ export default function Result({ onNavigate }: ResultProps) {
                 .price-old { text-decoration: line-through; opacity: 0.6; margin: 0; }
                 .price-new { font-size: 3rem; color: #facc15; font-weight: 900; margin: 5px 0; }
                 .price-discount { color: #4ade80; font-weight: bold; }
-                .cta-buy-final { width: 100%; background: #eab308; color: black; font-weight: 900; padding: 20px; border-radius: 12px; font-size: 1.5rem; border: 3px solid white; cursor: pointer; }
+                
+                /* CTA BUTTONS STYLES */
+                .cta-button { 
+                    width: 100%; 
+                    color: black; 
+                    font-weight: 900; 
+                    padding: 20px; 
+                    border-radius: 12px; 
+                    border: 3px solid white; 
+                    cursor: pointer; 
+                    margin-top: 20px;
+                    transition: all 0.3s ease;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 10px;
+                    font-size: clamp(1rem, 4vw, 1.5rem);
+                }
+                .cta-button:disabled {
+                    opacity: 0.6;
+                    cursor: not-allowed;
+                    filter: grayscale(50%);
+                }
+                .cta-button:hover:not(:disabled) {
+                    transform: translateY(-2px);
+                    box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+                }
+
+                /* Button Colors */
+                .btn-green { background: #10b981; }
+                .btn-green:hover:not(:disabled) { background: #059669; }
+                .btn-yellow { background: #eab308; }
+                .btn-yellow:hover:not(:disabled) { background: #ca8a04; }
+                .btn-orange { background: #f97316; }
+                .btn-orange:hover:not(:disabled) { background: #ea580c; }
+
+                /* Button Sizes */
+                .btn-size-1 { font-size: 1rem; }
+                .btn-size-2 { font-size: 1.125rem; }
+                .btn-size-3 { font-size: 1.25rem; }
+                .btn-size-4 { font-size: 1.5rem; }
+
+                /* Button Animations */
+                .btn-animation-fadein { animation: fadeIn 0.6s ease-in-out; }
+                .btn-animation-bounce { animation: bounce 1s infinite; }
+                @keyframes bounce {
+                    0%, 100% { transform: translateY(0); }
+                    50% { transform: translateY(-5px); }
+                }
+                .btn-animation-pulse { animation: pulse 1.5s infinite; }
+                @keyframes pulse {
+                    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.7); }
+                    70% { transform: scale(1.02); box-shadow: 0 0 0 10px rgba(249, 115, 22, 0); }
+                    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(249, 115, 22, 0); }
+                }
+                .btn-animation-glowshake { animation: glowshake 2s infinite; }
+                @keyframes glowshake {
+                    0%, 100% { transform: translateX(0) scale(1); box-shadow: 0 0 15px rgba(16, 185, 129, 0.8); }
+                    25% { transform: translateX(-2px) scale(1.01); box-shadow: 0 0 20px rgba(16, 185, 129, 1); }
+                    50% { transform: translateX(2px) scale(1); box-shadow: 0 0 15px rgba(16, 185, 129, 0.8); }
+                    75% { transform: translateX(-2px) scale(1.01); box-shadow: 0 0 20px rgba(16, 185, 129, 1); }
+                }
+
+                /* CHECKMARK STYLES */
+                .checkmark-container {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    margin-top: 20px;
+                    min-height: 80px; /* Ensure space for checkmark */
+                }
+                .checkmark-glow {
+                    font-size: 4rem;
+                    animation: checkmarkShine 1s ease-in-out;
+                }
+                @keyframes checkmarkShine {
+                    0% { 
+                        opacity: 0;
+                        transform: scale(0.5);
+                        filter: brightness(1);
+                    }
+                    50% { 
+                        opacity: 1;
+                        transform: scale(1.1);
+                        filter: brightness(1.8);
+                    }
+                    100% { 
+                        opacity: 1;
+                        transform: scale(1);
+                        filter: brightness(1);
+                    }
+                }
+
+                /* FADE OUT ANIMATION */
+                .fade-out {
+                    animation: fadeOutAnimation 0.3s ease-out forwards;
+                }
+                @keyframes fadeOutAnimation {
+                    from { opacity: 1; transform: translateY(0); }
+                    to { opacity: 0; transform: translateY(-20px); }
+                }
+
                 .real-proof-box { background: rgba(74, 222, 128, 0.1); border: 2px solid rgba(74, 222, 128, 0.3); border-radius: 12px; padding: 15px; text-align: center; color: #4ade80; margin: 20px 0; }
-                .trust-icons { display: flex; justify-content: center; gap: 15px; color: #4ade80; font-size: 0.85rem; margin-bottom: 20px; }
+                .trust-icons { display: flex; justify-content: center; gap: 15px; color: #4ade80; font-size: 0.85rem; margin-bottom: 20px; flex-wrap: wrap; }
                 
                 /* GRID DE URGÊNCIA OTIMIZADO */
                 .final-urgency-grid-optimized { 
@@ -604,6 +796,43 @@ export default function Result({ onNavigate }: ResultProps) {
                 @keyframes fadeInUp {
                     from { opacity: 0; transform: translateY(100%); }
                     to { opacity: 1; transform: translateY(0); }
+                }
+
+                /* STYLES PARA O DELAY DO BOTÃO DO VÍDEO */
+                .video-delay-indicator {
+                    background: rgba(0,0,0,0.4);
+                    border: 2px solid #eab308;
+                    border-radius: 12px;
+                    padding: 20px;
+                    margin-top: 20px;
+                    text-align: center;
+                    color: white;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    gap: 15px;
+                }
+                .delay-text {
+                    font-size: 1.1rem;
+                    font-weight: bold;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 10px;
+                }
+                .delay-progress-bar-container {
+                    width: 100%;
+                    height: 10px;
+                    background: rgba(255,255,255,0.2);
+                    border-radius: 5px;
+                    overflow: hidden;
+                }
+                .delay-progress-bar {
+                    height: 100%;
+                    background: #eab308;
+                    width: 0%;
+                    transition: width 1s linear;
+                    border-radius: 5px;
                 }
             `}</style>
         </div>
