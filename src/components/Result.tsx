@@ -428,6 +428,181 @@ export default function Result({ onNavigate }: ResultProps) {
                                 )}
                             </div>
                         )}
+
+                        {/* ✅ DEPOIMENTOS ESTRATÉGICOS - INSERIDO AQUI */}
+                        <div className="testimonials-section fade-in" style={{
+                            marginTop: 'clamp(32px, 6vw, 48px)',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: 'clamp(20px, 4vw, 24px)'
+                        }}>
+                            {/* DEPOIMENTO 1 - HOMEM (PRIORIDADE) */}
+                            <div className="testimonial-card" style={{
+                                background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(74, 222, 128, 0.1))',
+                                border: '2px solid rgba(16, 185, 129, 0.4)',
+                                borderRadius: '16px',
+                                padding: 'clamp(20px, 5vw, 28px)',
+                                boxShadow: '0 8px 24px rgba(16, 185, 129, 0.3)',
+                                display: 'flex',
+                                gap: 'clamp(16px, 4vw, 20px)',
+                                alignItems: 'flex-start'
+                            }}>
+                                <img 
+                                    src="https://comprarplanseguro.shop/wp-content/uploads/2025/08/Captura-de-Tela-2025-08-08-as-19.24.05.png" 
+                                    alt="Carlos M." 
+                                    style={{
+                                        width: 'clamp(60px, 15vw, 80px)',
+                                        height: 'clamp(60px, 15vw, 80px)',
+                                        borderRadius: '50%',
+                                        objectFit: 'cover',
+                                        border: '3px solid rgba(16, 185, 129, 0.6)',
+                                        flexShrink: 0
+                                    }}
+                                />
+                                <div style={{ flex: 1 }}>
+                                    <div style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '8px',
+                                        marginBottom: 'clamp(8px, 2vw, 12px)'
+                                    }}>
+                                        <strong style={{
+                                            fontSize: 'clamp(1rem, 4vw, 1.25rem)',
+                                            color: '#10b981'
+                                        }}>
+                                            Carlos M.
+                                        </strong>
+                                        <span style={{
+                                            fontSize: 'clamp(0.75rem, 3vw, 0.875rem)',
+                                            color: 'rgba(255,255,255,0.6)'
+                                        }}>
+                                            • 29 años • Buenos Aires
+                                        </span>
+                                    </div>
+                                    <div style={{
+                                        color: '#facc15',
+                                        fontSize: 'clamp(1rem, 4vw, 1.25rem)',
+                                        marginBottom: 'clamp(8px, 2vw, 10px)'
+                                    }}>
+                                        ⭐⭐⭐⭐⭐
+                                    </div>
+                                    <p style={{
+                                        fontSize: 'clamp(0.9rem, 3.5vw, 1.05rem)',
+                                        lineHeight: '1.6',
+                                        color: 'white',
+                                        margin: 0,
+                                        fontStyle: 'italic'
+                                    }}>
+                                        "Ella estaba con otro tipo. Yo estaba destruido. 
+                                        El <strong style={{ color: '#10b981' }}>Módulo 4 (Protocolo de Emergencia)</strong> 
+                                        me salvó de cometer errores fatales. Seguí las 3 fases de la Ventana de 72 Horas al pie de la letra, 
+                                        y en 19 días ella terminó con él y volvió conmigo. 
+                                        <strong style={{ color: '#facc15' }}> No lo hubiera creído si no me pasaba a mí</strong>. 
+                                        Ricardo sabe exactamente cómo funciona la mente femenina."
+                                    </p>
+                                    <div style={{
+                                        marginTop: 'clamp(12px, 3vw, 16px)',
+                                        padding: 'clamp(8px, 2vw, 12px)',
+                                        background: 'rgba(0,0,0,0.3)',
+                                        borderRadius: '8px',
+                                        borderLeft: '4px solid #10b981'
+                                    }}>
+                                        <p style={{
+                                            fontSize: 'clamp(0.8rem, 3vw, 0.95rem)',
+                                            color: 'rgba(255,255,255,0.8)',
+                                            margin: 0,
+                                            lineHeight: '1.5'
+                                        }}>
+                                            <strong style={{ color: '#10b981' }}>✓ Resultado:</strong> Reconquista en 19 días | 
+                                            <strong style={{ color: '#10b981' }}> ✓ Situación:</strong> Ella con otra persona
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* DEPOIMENTO 2 - HOMEM (CONTATO ZERO) */}
+                            <div className="testimonial-card" style={{
+                                background: 'linear-gradient(135deg, rgba(234, 179, 8, 0.15), rgba(250, 204, 21, 0.1))',
+                                border: '2px solid rgba(234, 179, 8, 0.4)',
+                                borderRadius: '16px',
+                                padding: 'clamp(20px, 5vw, 28px)',
+                                boxShadow: '0 8px 24px rgba(234, 179, 8, 0.3)',
+                                display: 'flex',
+                                gap: 'clamp(16px, 4vw, 20px)',
+                                alignItems: 'flex-start'
+                            }}>
+                                <img 
+                                    src="https://comprarplanseguro.shop/wp-content/uploads/2025/08/Captura-de-Tela-2025-08-08-as-19.01.05.png" 
+                                    alt="Diego R." 
+                                    style={{
+                                        width: 'clamp(60px, 15vw, 80px)',
+                                        height: 'clamp(60px, 15vw, 80px)',
+                                        borderRadius: '50%',
+                                        objectFit: 'cover',
+                                        border: '3px solid rgba(234, 179, 8, 0.6)',
+                                        flexShrink: 0
+                                    }}
+                                />
+                                <div style={{ flex: 1 }}>
+                                    <div style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '8px',
+                                        marginBottom: 'clamp(8px, 2vw, 12px)'
+                                    }}>
+                                        <strong style={{
+                                            fontSize: 'clamp(1rem, 4vw, 1.25rem)',
+                                            color: '#eab308'
+                                        }}>
+                                            Diego R.
+                                        </strong>
+                                        <span style={{
+                                            fontSize: 'clamp(0.75rem, 3vw, 0.875rem)',
+                                            color: 'rgba(255,255,255,0.6)'
+                                        }}>
+                                            • 32 años • Ciudad de México
+                                        </span>
+                                    </div>
+                                    <div style={{
+                                        color: '#facc15',
+                                        fontSize: 'clamp(1rem, 4vw, 1.25rem)',
+                                        marginBottom: 'clamp(8px, 2vw, 10px)'
+                                    }}>
+                                        ⭐⭐⭐⭐⭐
+                                    </div>
+                                    <p style={{
+                                        fontSize: 'clamp(0.9rem, 3.5vw, 1.05rem)',
+                                        lineHeight: '1.6',
+                                        color: 'white',
+                                        margin: 0,
+                                        fontStyle: 'italic'
+                                    }}>
+                                        "Llevábamos 5 meses sin hablar. Ella me bloqueó de todo. 
+                                        Pensé que era imposible. Apliqué el <strong style={{ color: '#eab308' }}>Protocolo de Contacto Zero Inverso</strong> 
+                                        del Módulo 1, y en 13 días ella me desbloqueó y me escribió primero. 
+                                        Hoy llevamos 3 meses juntos de nuevo, <strong style={{ color: '#facc15' }}>y la relación es 10 veces mejor</strong>. 
+                                        Este método funciona incluso en casos extremos como el mío."
+                                    </p>
+                                    <div style={{
+                                        marginTop: 'clamp(12px, 3vw, 16px)',
+                                        padding: 'clamp(8px, 2vw, 12px)',
+                                        background: 'rgba(0,0,0,0.3)',
+                                        borderRadius: '8px',
+                                        borderLeft: '4px solid #eab308'
+                                    }}>
+                                        <p style={{
+                                            fontSize: 'clamp(0.8rem, 3vw, 0.95rem)',
+                                            color: 'rgba(255,255,255,0.8)',
+                                            margin: 0,
+                                            lineHeight: '1.5'
+                                        }}>
+                                            <strong style={{ color: '#eab308' }}>✓ Resultado:</strong> Reconquista en 13 días | 
+                                            <strong style={{ color: '#eab308' }}> ✓ Situación:</strong> Bloqueado 5 meses
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 )}
 
@@ -622,7 +797,7 @@ export default function Result({ onNavigate }: ResultProps) {
                                     fontWeight: '700',
                                     margin: 0
                                 }}>
-                                    🔥 92% DE DESCUENTO (Solo hoy)
+                                    🔥 92% DE DESCUENTO - SOLO HOY
                                 </p>
                             </div>
                         </div>
