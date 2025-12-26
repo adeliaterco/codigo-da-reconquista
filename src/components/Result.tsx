@@ -12,7 +12,7 @@ import {
     getVentana72Copy,
     getOfferTitle,
     getFeatures, 
-    getCTA, // Keep getCTA for other uses if any, but hardcode final CTA
+    getCTA,
     getFaseText
 } from '../utils/contentByGender';
 import { getEmotionalValidation } from '../utils/emotionalValidation';
@@ -32,9 +32,9 @@ export default function Result({ onNavigate }: ResultProps) {
 
     // --- ESTADO PARA OS CHECKMARKS DOS BOTÕES ---
     const [buttonCheckmarks, setButtonCheckmarks] = useState<{[key: number]: boolean}>({
-        0: false, // For button after Diagnóstico (Phase 1)
-        1: false, // For button after Video (Phase 2)
-        2: false  // For button after Ventana (Phase 3)
+        0: false,
+        1: false,
+        2: false
     });
 
     // --- PERSISTÊNCIA DO TIMER NO LOCALSTORAGE ---
@@ -217,7 +217,6 @@ export default function Result({ onNavigate }: ResultProps) {
         }
 
         if (targetRef && targetRef.current) {
-            // Adiciona um pequeno delay para garantir que a seção já está montada e visível
             setTimeout(() => {
                 targetRef!.current!.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }, 100); 
@@ -233,49 +232,46 @@ export default function Result({ onNavigate }: ResultProps) {
     // --- HANDLERS DE CLIQUE DOS BOTÕES COM TRANSIÇÃO ---
     const handlePhase1ButtonClick = () => {
         playKeySound();
-        setButtonCheckmarks(prev => ({ ...prev, 0: true })); // Show checkmark for button 0
-        setFadeOutPhase(1); // Start fading out current section (Diagnóstico)
+        setButtonCheckmarks(prev => ({ ...prev, 0: true }));
+        setFadeOutPhase(1);
 
         setTimeout(() => {
-            setCurrentPhase(2); // Advance to next phase (Video)
+            setCurrentPhase(2);
             ga4Tracking.phaseProgressionClicked({ phase_from: 1, phase_to: 2, button_name: 'Desbloquear El Vídeo Secreto' });
             tracking.vslEvent('started');
             ga4Tracking.videoStarted();
-            setFadeOutPhase(null); // Clear fade out state
-            // buttonCheckmarks[0] remains true, but section 1 is unmounted
-        }, 1300); // 0.3s fade-out + 1s for checkmark animation/display
+            setFadeOutPhase(null);
+        }, 1300);
     };
 
     const handlePhase2ButtonClick = () => {
         if (!isVideoButtonEnabled) return;
         playKeySound();
-        setButtonCheckmarks(prev => ({ ...prev, 1: true })); // Show checkmark for button 1
-        setFadeOutPhase(2); // Start fading out current section (Video)
+        setButtonCheckmarks(prev => ({ ...prev, 1: true }));
+        setFadeOutPhase(2);
 
         setTimeout(() => {
-            setCurrentPhase(3); // Advance to next phase (Ventana 72h)
+            setCurrentPhase(3);
             ga4Tracking.phaseProgressionClicked({ phase_from: 2, phase_to: 3, button_name: 'Revelar VENTANA DE 72 HORAS' });
             tracking.revelationViewed('72h_window');
             ga4Tracking.revelationViewed('Ventana 72 Horas', 2);
-            setFadeOutPhase(null); // Clear fade out state
-            // buttonCheckmarks[1] remains true, but section 2 is unmounted
-        }, 1300); // 0.3s fade-out + 1s for checkmark animation/display
+            setFadeOutPhase(null);
+        }, 1300);
     };
 
     const handlePhase3ButtonClick = () => {
         playKeySound();
-        setButtonCheckmarks(prev => ({ ...prev, 2: true })); // Show checkmark for button 2
-        setFadeOutPhase(3); // Start fading out current section (Ventana 72h)
+        setButtonCheckmarks(prev => ({ ...prev, 2: true }));
+        setFadeOutPhase(3);
 
         setTimeout(() => {
-            setCurrentPhase(4); // Advance to next phase (Oferta)
+            setCurrentPhase(4);
             ga4Tracking.phaseProgressionClicked({ phase_from: 3, phase_to: 4, button_name: 'Revelar Mi Plan Personalizado' });
             tracking.revelationViewed('offer');
             ga4Tracking.revelationViewed('Oferta Revelada', 3);
             ga4Tracking.offerRevealed();
-            setFadeOutPhase(null); // Clear fade out state
-            // buttonCheckmarks[2] remains true, but section 3 is unmounted
-        }, 1300); // 0.3s fade-out + 1s for checkmark animation/display
+            setFadeOutPhase(null);
+        }, 1300);
     };
 
     const handleCTAClick = () => {
@@ -343,7 +339,7 @@ export default function Result({ onNavigate }: ResultProps) {
                 )}
 
                 {/* FASE 1: DIAGNÓSTICO */}
-                {currentPhase === 1 && ( // Render only if currentPhase is 1
+                {currentPhase === 1 && (
                     <div 
                         ref={diagnosticoSectionRef} 
                         className={`revelation fade-in ${fadeOutPhase === 1 ? 'fade-out' : ''}`}
@@ -369,7 +365,6 @@ export default function Result({ onNavigate }: ResultProps) {
                             <p><strong>Tu situación específica:</strong><br />{getEmotionalValidation(quizData)}</p>
                         </div>
 
-                        {/* BOTÃO 1: DESBLOQUEAR VÍDEO */}
                         {buttonCheckmarks[0] ? (
                             <div className="checkmark-container">
                                 <div className="checkmark-glow">✅</div>
@@ -386,7 +381,7 @@ export default function Result({ onNavigate }: ResultProps) {
                 )}
 
                 {/* FASE 2: VÍDEO */}
-                {currentPhase === 2 && ( // Render only if currentPhase is 2
+                {currentPhase === 2 && (
                     <div 
                         ref={videoSectionRef} 
                         className={`revelation fade-in vsl-revelation ${fadeOutPhase === 2 ? 'fade-out' : ''}`}
@@ -399,7 +394,6 @@ export default function Result({ onNavigate }: ResultProps) {
                             <div className="vsl-placeholder"></div> 
                         </div>
 
-                        {/* BOTÃO 2: REVELAR VENTANA DE 72 HORAS (COM DELAY E INDICADOR) */}
                         {buttonCheckmarks[1] ? (
                             <div className="checkmark-container">
                                 <div className="checkmark-glow">✅</div>
@@ -438,7 +432,7 @@ export default function Result({ onNavigate }: ResultProps) {
                 )}
 
                 {/* FASE 3: VENTANA 72H */}
-                {currentPhase === 3 && ( // Render only if currentPhase is 3
+                {currentPhase === 3 && (
                     <div 
                         ref={ventana72SectionRef} 
                         className={`revelation fade-in ventana-box-custom ${fadeOutPhase === 3 ? 'fade-out' : ''}`}
@@ -462,7 +456,6 @@ export default function Result({ onNavigate }: ResultProps) {
                             className="ventana-img"
                         />
 
-                        {/* BOTÃO 3: REVELAR MI PLAN PERSONALIZADO */}
                         {buttonCheckmarks[2] ? (
                             <div className="checkmark-container">
                                 <div className="checkmark-glow">✅</div>
@@ -478,13 +471,163 @@ export default function Result({ onNavigate }: ResultProps) {
                     </div>
                 )}
 
-                {/* FASE 4: OFERTA (OTIMIZADA) */}
-                {currentPhase >= 4 && ( // Render if currentPhase is 4 or greater (final phase)
+                {/* ✅ FASE 4: OFERTA (OTIMIZADA) */}
+                {currentPhase >= 4 && (
                     <div ref={offerSectionRef} className="revelation fade-in offer-section-custom">
                         <div className="offer-badge">OFERTA EXCLUSIVA</div>
                         <h2 className="offer-title-main">{getOfferTitle(gender)}</h2>
 
-                        {/* BOX DE DADOS DO QUIZ NA OFERTA */}
+                        {/* ✅ NOVO: STACK DE VALOR VISUAL */}
+                        <div className="value-stack-box" style={{
+                            background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(234, 179, 8, 0.1))',
+                            border: '3px solid rgba(16, 185, 129, 0.4)',
+                            borderRadius: '16px',
+                            padding: 'clamp(20px, 5vw, 32px)',
+                            marginBottom: 'clamp(24px, 5vw, 32px)',
+                            boxShadow: '0 8px 32px rgba(16, 185, 129, 0.3)'
+                        }}>
+                            <h3 style={{
+                                fontSize: 'clamp(1.25rem, 5vw, 1.75rem)',
+                                color: '#10b981',
+                                textAlign: 'center',
+                                marginBottom: 'clamp(16px, 4vw, 24px)',
+                                fontWeight: '900'
+                            }}>
+                                💎 LO QUE RECIBES HOY
+                            </h3>
+                            
+                            <div style={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: 'clamp(8px, 2vw, 12px)',
+                                marginBottom: 'clamp(16px, 4vw, 20px)'
+                            }}>
+                                <div className="value-item" style={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                    padding: 'clamp(8px, 2vw, 12px)',
+                                    background: 'rgba(0,0,0,0.3)',
+                                    borderRadius: '8px'
+                                }}>
+                                    <span style={{ fontSize: 'clamp(0.9rem, 3.5vw, 1.1rem)' }}>
+                                        📱 Módulo 1: Cómo Hablar Con {gender === 'HOMBRE' ? 'Ella' : 'Él'}
+                                    </span>
+                                    <strong style={{ color: '#10b981', fontSize: 'clamp(1rem, 4vw, 1.25rem)' }}>$27</strong>
+                                </div>
+                                <div className="value-item" style={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                    padding: 'clamp(8px, 2vw, 12px)',
+                                    background: 'rgba(0,0,0,0.3)',
+                                    borderRadius: '8px'
+                                }}>
+                                    <span style={{ fontSize: 'clamp(0.9rem, 3.5vw, 1.1rem)' }}>👥 Módulo 2: Cómo Encontrarte</span>
+                                    <strong style={{ color: '#10b981', fontSize: 'clamp(1rem, 4vw, 1.25rem)' }}>$27</strong>
+                                </div>
+                                <div className="value-item" style={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                    padding: 'clamp(8px, 2vw, 12px)',
+                                    background: 'rgba(0,0,0,0.3)',
+                                    borderRadius: '8px'
+                                }}>
+                                    <span style={{ fontSize: 'clamp(0.9rem, 3.5vw, 1.1rem)' }}>❤️ Módulo 3: Reconquista Definitiva</span>
+                                    <strong style={{ color: '#10b981', fontSize: 'clamp(1rem, 4vw, 1.25rem)' }}>$27</strong>
+                                </div>
+                                <div className="value-item" style={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                    padding: 'clamp(8px, 2vw, 12px)',
+                                    background: 'rgba(0,0,0,0.3)',
+                                    borderRadius: '8px'
+                                }}>
+                                    <span style={{ fontSize: 'clamp(0.9rem, 3.5vw, 1.1rem)' }}>🚨 Módulo 4: Protocolo de Emergencia</span>
+                                    <strong style={{ color: '#10b981', fontSize: 'clamp(1rem, 4vw, 1.25rem)' }}>$27</strong>
+                                </div>
+                                <div className="value-item" style={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                    padding: 'clamp(8px, 2vw, 12px)',
+                                    background: 'rgba(0,0,0,0.3)',
+                                    borderRadius: '8px'
+                                }}>
+                                    <span style={{ fontSize: 'clamp(0.9rem, 3.5vw, 1.1rem)' }}>🎁 Bônus: Scripts + Guías</span>
+                                    <strong style={{ color: '#10b981', fontSize: 'clamp(1rem, 4vw, 1.25rem)' }}>$15</strong>
+                                </div>
+                            </div>
+
+                            <div style={{
+                                borderTop: '2px solid rgba(16, 185, 129, 0.3)',
+                                paddingTop: 'clamp(12px, 3vw, 16px)',
+                                marginBottom: 'clamp(12px, 3vw, 16px)'
+                            }}>
+                                <div style={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                    marginBottom: 'clamp(8px, 2vw, 12px)'
+                                }}>
+                                    <span style={{ 
+                                        fontSize: 'clamp(1rem, 4vw, 1.25rem)', 
+                                        color: 'rgba(255,255,255,0.7)',
+                                        textDecoration: 'line-through'
+                                    }}>
+                                        VALOR TOTAL:
+                                    </span>
+                                    <strong style={{ 
+                                        fontSize: 'clamp(1.25rem, 5vw, 1.75rem)', 
+                                        color: 'rgba(255,255,255,0.7)',
+                                        textDecoration: 'line-through'
+                                    }}>
+                                        $123
+                                    </strong>
+                                </div>
+                                <div style={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center'
+                                }}>
+                                    <span style={{ 
+                                        fontSize: 'clamp(1.25rem, 5vw, 1.75rem)', 
+                                        color: '#facc15',
+                                        fontWeight: '900'
+                                    }}>
+                                        PRECIO HOY:
+                                    </span>
+                                    <strong style={{ 
+                                        fontSize: 'clamp(2rem, 8vw, 3rem)', 
+                                        color: '#10b981',
+                                        fontWeight: '900'
+                                    }}>
+                                        $9.90
+                                    </strong>
+                                </div>
+                            </div>
+
+                            <div style={{
+                                background: 'rgba(250, 204, 21, 0.2)',
+                                border: '2px solid rgba(250, 204, 21, 0.5)',
+                                borderRadius: '12px',
+                                padding: 'clamp(12px, 3vw, 16px)',
+                                textAlign: 'center'
+                            }}>
+                                <p style={{
+                                    fontSize: 'clamp(1rem, 4vw, 1.25rem)',
+                                    color: '#facc15',
+                                    fontWeight: '700',
+                                    margin: 0
+                                }}>
+                                    🔥 92% DE DESCUENTO (Solo por 72 horas)
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* BOX DE DADOS DO QUIZ NA OFERTA (MANTIDO) */}
                         <div className="quiz-summary-box" style={{
                             background: 'rgba(234, 179, 8, 0.1)',
                             border: '2px solid rgba(234, 179, 8, 0.3)',
@@ -515,7 +658,7 @@ export default function Result({ onNavigate }: ResultProps) {
                             </ul>
                         </div>
 
-                        {/* FEATURES COM CHECKMARKS */}
+                        {/* FEATURES COM CHECKMARKS (MANTIDO) */}
                         <div className="offer-features" style={{
                             display: 'flex',
                             flexDirection: 'column',
@@ -547,31 +690,92 @@ export default function Result({ onNavigate }: ResultProps) {
                             ))}
                         </div>
 
-                        {/* PREÇO E DESCONTO */}
+                        {/* PREÇO E DESCONTO (MANTIDO) */}
                         <div className="price-box">
                             <p className="price-old">Precio regular: $67</p>
                             <p className="price-new">$9.90</p>
                             <p className="price-discount">💰 85% de descuento HOY</p>
                         </div>
 
-                        {/* BOTÃO 4: CTA FINAL */}
-                        <button className="cta-button btn-green btn-size-4 btn-animation-glowshake" onClick={handleCTAClick}>
-                            🚀 SÍ, QUIERO MI RECONQUISTA GARANTIZADA 🚀
+                        {/* ✅ ALTERADO: CTA OTIMIZADO COM PREÇO E URGÊNCIA */}
+                        <button 
+                            className="cta-button btn-green btn-size-4 btn-animation-glowshake" 
+                            onClick={handleCTAClick}
+                            style={{
+                                fontSize: 'clamp(1.1rem, 4.5vw, 1.5rem)',
+                                padding: 'clamp(18px, 4vw, 24px)',
+                                lineHeight: '1.4'
+                            }}
+                        >
+                            <span style={{ display: 'block', marginBottom: '4px' }}>
+                                🚀 SÍ, QUIERO ACCESO POR $9.90
+                            </span>
+                            <span style={{ 
+                                display: 'block', 
+                                fontSize: 'clamp(0.8rem, 3vw, 1rem)',
+                                opacity: 0.9,
+                                fontWeight: '600'
+                            }}>
+                                ⏰ {formatTime(timeLeft)} RESTANTES
+                            </span>
                         </button>
 
-                        {/* PROVA SOCIAL REAL */}
+                        {/* ✅ NOVO: GARANTIA DESTACADA */}
+                        <div className="guarantee-section" style={{
+                            background: 'linear-gradient(135deg, rgba(74, 222, 128, 0.15), rgba(16, 185, 129, 0.1))',
+                            border: '3px solid rgba(74, 222, 128, 0.4)',
+                            borderRadius: '16px',
+                            padding: 'clamp(20px, 5vw, 32px)',
+                            margin: 'clamp(24px, 5vw, 32px) 0',
+                            textAlign: 'center',
+                            boxShadow: '0 8px 32px rgba(74, 222, 128, 0.3)'
+                        }}>
+                            <div style={{ fontSize: 'clamp(3rem, 10vw, 4rem)', marginBottom: '12px' }}>
+                                🛡️
+                            </div>
+                            <h3 style={{
+                                fontSize: 'clamp(1.25rem, 5vw, 1.75rem)',
+                                color: '#4ade80',
+                                marginBottom: 'clamp(12px, 3vw, 16px)',
+                                fontWeight: '900'
+                            }}>
+                                GARANTÍA BLINDADA DE 30 DÍAS
+                            </h3>
+                            <p style={{
+                                fontSize: 'clamp(0.95rem, 4vw, 1.15rem)',
+                                lineHeight: '1.6',
+                                color: 'white',
+                                marginBottom: '16px'
+                            }}>
+                                Si en 30 días no ves resultados concretos en tu reconquista, 
+                                <strong style={{ color: '#4ade80' }}> devolvemos el 100% de tu dinero</strong>, 
+                                sin preguntas, sin burocracia.
+                            </p>
+                            <p style={{
+                                fontSize: 'clamp(0.85rem, 3.5vw, 1rem)',
+                                color: 'rgba(255,255,255,0.8)',
+                                fontStyle: 'italic'
+                            }}>
+                                ✓ Riesgo CERO para ti<br/>
+                                ✓ Reembolso en 24-48 horas<br/>
+                                ✓ Sin complicaciones
+                            </p>
+                        </div>
+
+                        {/* PROVA SOCIAL REAL (MANTIDO) */}
                         <div className="real-proof-box">
                             <p>⭐ <strong>4.8/5 estrellas</strong> (2.341 avaliações verificadas)</p>
                             <p>📱 Última compra hace 4 minutos</p>
                         </div>
 
+                        {/* TRUST ICONS (MANTIDO) */}
                         <div className="trust-icons">
                             <span>🔒 Compra segura</span>
                             <span>✅ Acceso instantáneo</span>
                             <span>↩️ 30 días de garantía</span>
                         </div>
 
-                        {/* GRID DE URGÊNCIA OTIMIZADO */}
+                        {/* GRID DE URGÊNCIA OTIMIZADO (MANTIDO) */}
                         <div className="final-urgency-grid-optimized">
                             <div className="urgency-item-compact">
                                 <span style={{ fontSize: 'clamp(0.75rem, 3vw, 0.875rem)', opacity: 0.8 }}>Tiempo:</span>
@@ -583,7 +787,7 @@ export default function Result({ onNavigate }: ResultProps) {
                             </div>
                         </div>
 
-                        {/* CONTADOR DE PESSOAS COMPRANDO (REDUZIDO) */}
+                        {/* CONTADOR DE PESSOAS COMPRANDO (MANTIDO) */}
                         <p className="people-buying-counter" style={{
                             textAlign: 'center',
                             color: 'rgb(74, 222, 128)',
@@ -597,7 +801,7 @@ export default function Result({ onNavigate }: ResultProps) {
                             ✨ {peopleBuying} comprando ahora
                         </p>
 
-                        {/* PROVA SOCIAL +12.847 (REDUZIDA) */}
+                        {/* PROVA SOCIAL +12.847 (MANTIDO) */}
                         <p className="social-proof-count" style={{
                             textAlign: 'center',
                             color: 'rgb(74, 222, 128)',
@@ -610,7 +814,7 @@ export default function Result({ onNavigate }: ResultProps) {
                             ✓ +12.847 reconquistas exitosas
                         </p>
 
-                        {/* EXCLUSIVIDADE (REDUZIDA) */}
+                        {/* EXCLUSIVIDADE (MANTIDO) */}
                         <p className="guarantee-text" style={{
                             textAlign: 'center',
                             fontSize: 'clamp(0.75rem, 3vw, 0.875rem)',
@@ -624,7 +828,7 @@ export default function Result({ onNavigate }: ResultProps) {
                 )}
             </div>
 
-            {/* STICKY FOOTER */}
+            {/* STICKY FOOTER (MANTIDO) */}
             {currentPhase >= 4 && (
                 <div className="sticky-footer-urgency fade-in-up">
                     ⏰ {formatTime(timeLeft)} • {spotsLeft} spots restantes
@@ -659,6 +863,7 @@ export default function Result({ onNavigate }: ResultProps) {
                     margin-top: 20px;
                     transition: all 0.3s ease;
                     display: flex;
+                    flex-direction: column;
                     align-items: center;
                     justify-content: center;
                     gap: 10px;
@@ -715,7 +920,7 @@ export default function Result({ onNavigate }: ResultProps) {
                     justify-content: center;
                     align-items: center;
                     margin-top: 20px;
-                    min-height: 80px; /* Ensure space for checkmark */
+                    min-height: 80px;
                 }
                 .checkmark-glow {
                     font-size: 4rem;
