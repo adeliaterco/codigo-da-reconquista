@@ -622,7 +622,7 @@ export default function Result({ onNavigate }: ResultProps) {
                                     fontWeight: '700',
                                     margin: 0
                                 }}>
-                                    🔥 92% DE DESCUENTO (Solo por 72 horas)
+                                    🔥 92% DE DESCUENTO (Solo hoy)
                                 </p>
                             </div>
                         </div>
@@ -692,9 +692,9 @@ export default function Result({ onNavigate }: ResultProps) {
 
                         {/* PREÇO E DESCONTO (MANTIDO) */}
                         <div className="price-box">
-                            <p className="price-old">Precio regular: $67</p>
+                            <p className="price-old">Precio regular: $123</p>
                             <p className="price-new">$9.90</p>
-                            <p className="price-discount">💰 85% de descuento HOY</p>
+                            <p className="price-discount">💰 92% de descuento HOY</p>
                         </div>
 
                         {/* ✅ ALTERADO: CTA OTIMIZADO COM PREÇO E URGÊNCIA */}
