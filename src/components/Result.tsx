@@ -27,7 +27,7 @@ export default function Result({ onNavigate }: ResultProps) {
     const [fadeOutPhase, setFadeOutPhase] = useState<number | null>(null);
 
     // --- ESTADOS PARA O DELAY DO BOTÃO DO VÍDEO ---
-    const [videoButtonDelayLeft, setVideoButtonDelayLeft] = useState(50);
+    const [videoButtonDelayLeft, setVideoButtonDelayLeft] = useState(20);
     const [isVideoButtonEnabled, setIsVideoButtonEnabled] = useState(false);
 
     // --- ESTADO PARA OS CHECKMARKS DOS BOTÕES ---
@@ -163,7 +163,7 @@ export default function Result({ onNavigate }: ResultProps) {
     useEffect(() => {
         let delayInterval: NodeJS.Timeout;
         if (currentPhase === 2) {
-            setVideoButtonDelayLeft(50);
+            setVideoButtonDelayLeft(20);
             setIsVideoButtonEnabled(false);
 
             delayInterval = setInterval(() => {
