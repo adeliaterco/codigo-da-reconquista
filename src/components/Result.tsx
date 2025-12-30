@@ -387,8 +387,7 @@ export default function Result({ onNavigate }: ResultProps) {
                         className={`revelation fade-in vsl-revelation ${fadeOutPhase === 2 ? 'fade-out' : ''}`}
                     >
                         <div className="revelation-header">
-                            <div className="revelation-icon">🎥</div>
-                            <h2>Cómo Reactivar Los Interruptores Emocionales En 72 Horas</h2>
+                            <h2>Ahora solo falta un paso más para recuperar a la mujer que amas.</h2>
                         </div>
                         <div className="vsl-container">
                             <div className="vsl-placeholder"></div> 
